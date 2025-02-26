@@ -56,11 +56,17 @@
                     </li>
                     @endif
 
-                    @if ($usr->can('excel.upload')) 
+                    @if ($usr->can('excel.upload'))
                     <li class="{{ Route::is('admin.informations.upload_excel') ? 'active' : '' }}">
                         <a href="{{ route('admin.informations.upload_excel') }}">
                             <i class="ti-upload"></i> <span>Cargar Excel</span>
                         </a>
+                    </li>
+                    @endif
+
+                    @if ($usr->can('log.view'))
+                    <li class="{{ Route::is('admin.logs.index') ? 'active' : '' }}">
+                         <a href="{{ route('admin.logs.index') }}"><i class="fa fa-tasks"></i> Listado de Logs</a>
                     </li>
                     @endif
 

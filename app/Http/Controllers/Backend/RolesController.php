@@ -89,7 +89,7 @@ class RolesController extends Controller
             $role->save();
             $role->syncPermissions($permissions);
         }
-        activity('roles')->causedBy(auth()->user())->withProperties(['role' => $role->name])->log('Actualizo un rol.');
+        activity('roles')->causedBy(auth()->user())->withProperties(['role' => $role->name])->log('Actualizo el rol.');
         session()->flash('success', 'Role has been updated.');
         return back();
     }

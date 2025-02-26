@@ -27,7 +27,7 @@
                 <div class="card-body">
                     <h4 class="header-title">Subir Archivo Excel</h4>
 
-                    @can('dashboard.edit') <!-- Verifica si el usuario tiene el permiso dashboard.edit -->
+                    @can('dashboard.edit')
                         <form action="{{ route('admin.informations.import') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group">

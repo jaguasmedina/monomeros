@@ -63,7 +63,7 @@ class LoginController extends Controller
             activity('auth')
             ->causedBy(Auth::guard('admin')->user())
             ->withProperties(['email' => $request->email])
-            ->log('Admin successfully logged in.');
+            ->log('Administrador se logeo exitosamente.');
             session()->flash('success', 'Successully Logged in !');
             return redirect()->route('admin.dashboard');
         } else {
@@ -72,14 +72,14 @@ class LoginController extends Controller
                 activity('auth')
                 ->causedBy(Auth::guard('admin')->user())
                 ->withProperties(['username' => $request->email])
-                ->log('Admin successfully logged in using username.');
+                ->log('El administrador inició sesión exitosamente usando su nombre de usuario.');
                 session()->flash('success', 'Successully Logged in !');
                 return redirect()->route('admin.dashboard');
             }
             // error
             activity('auth')
-            ->withProperties(['email' => $request->email])
-            ->log('Failed login attempt for admin.');
+            ->withProperties(['username' => $request->email])
+            ->log('Intento de inicio de sesión fallido para el administrador.');
             session()->flash('error', 'Invalid email and password');
             return back();
         }

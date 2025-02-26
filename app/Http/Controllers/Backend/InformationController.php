@@ -14,6 +14,7 @@ use App\Models\Admin;
 use Carbon\Carbon;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class InformationController extends Controller
 {
@@ -93,6 +94,7 @@ class InformationController extends Controller
 
     public function import(Request $request)
     {
+
         $request->validate([
             'file' => 'required|mimes:xlsx,csv|max:2048'
         ]);
@@ -104,10 +106,22 @@ class InformationController extends Controller
             ->log('importó datos desde un archivo');
 
         return redirect()->route('admin.informations.index')->with('success', 'Datos importados correctamente.');
+
     }
 
     public function uploadExcel()
     {
         return view('backend.admin.upload_excel');
     }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'created_at', 'updated_at'])
+            ->useLogName('information')
+            ->setDescriptionForEvent(fn(string $eventName) => "Se ha realizado la acción: {$eventName} en un usuario")
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
 }

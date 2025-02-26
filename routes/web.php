@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Backend\AdminsController;
+use App\Http\Controllers\Backend\LogController;
 use App\Http\Controllers\Backend\Auth\ForgotPasswordController;
 use App\Http\Controllers\Backend\Auth\LoginController;
 use App\Http\Controllers\Backend\DashboardController;
@@ -33,6 +34,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('roles', RolesController::class);
     Route::resource('admins', AdminsController::class);
+    Route::get('logs', [LogController::class, 'index'])->name('logs.index');
     Route::resource('informations', InformationController::class);
     Route::post('informations/import', [InformationController::class, 'import'])->name('informations.import');
 

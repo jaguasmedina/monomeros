@@ -66,6 +66,12 @@ class RolePermissionSeeder extends Seeder
                     'role.approve',
                 ]
             ],
+            [
+                'group_name' => 'log',
+                'permissions' => [
+                    'log.view',
+                ]
+            ]
         ];
 
 

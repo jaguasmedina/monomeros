@@ -22,7 +22,7 @@ class InformacionImport implements ToModel, WithValidation, WithHeadingRow
             return null;
         }
 
-   //     \Log::info('Procesando fila: ', $row);
+
         if (!isset($row['identificador']) || empty(trim($row['identificador']))) {
             return null;
         }
@@ -34,7 +34,7 @@ class InformacionImport implements ToModel, WithValidation, WithHeadingRow
         }
         $fecha_registro = $this->transformDate($row['fecha_registro']);
         $fecha_vigencia = $this->transformDate($row['fecha_vigencia']);
-       // \Log::info('Fila procesada: ', $row);
+
         return new information([
             'identificador'   => $row['identificador'],
             'tipo'            => $row['tipo'],

@@ -14,6 +14,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Facades\Log;
+use Spatie\Activitylog\LogOptions;
 
 class AdminsController extends Controller
 {
@@ -49,15 +50,16 @@ class AdminsController extends Controller
         $admin->save();
 
         activity()
+        ->useLogName('administrador')
         ->causedBy(auth()->user())
-        ->performedOn($usuario)
-        ->log("Usuario {$usuario->nombre_completo} ha sido creado");
+        ->performedOn($admin)
+        ->log("Usuario {$admin->name} ha sido creado");
 
         if ($request->roles) {
             $admin->assignRole($request->roles);
         }
 
-        session()->flash('success', __('Admin has been created.'));
+        session()->flash('success', __('AAdministrador ha sido creado.'));
         return redirect()->route('admin.admins.index');
     }
 
@@ -90,11 +92,12 @@ class AdminsController extends Controller
             $admin->assignRole($request->roles);
         }
         activity()
+        ->useLogName('administrador')
         ->causedBy(auth()->user())
-        ->performedOn($usuario)
-        ->log("Usuario {$usuario->nombre_completo} ha sido actualizado");
+        ->performedOn($admin)
+        ->log("Usuario {$admin->name} ha sido actualizado");
 
-        session()->flash('success', 'Admin has been updated.');
+        session()->flash('success', 'Administrador ha sido actualizado.');
         return back();
     }
 
@@ -105,10 +108,23 @@ class AdminsController extends Controller
         $admin = Admin::findOrFail($id);
         $admin->delete();
         activity()
+        ->useLogName('administrador')
         ->causedBy(auth()->user())
-        ->performedOn($usuario)
-        ->log("Usuario {$usuario->nombre_completo} ha sido eliminado");
-        session()->flash('success', 'Admin has been deleted.');
+        ->performedOn($admin)
+        ->log("Usuario {$admin->name} ha sido eliminado");
+        session()->flash('success', 'Administrador Ha sido eliminado.');
         return back();
     }
+
+    public function getActivitylogOptions(): LogOptions
+{
+    return LogOptions::defaults()
+        ->logOnly(['name', 'username', 'email'])
+        ->useLogName('administrador')
+        ->setDescriptionForEvent(fn(string $eventName) => "Se ha realizado la acción: {$eventName} en un administrador")
+        ->logOnlyDirty()
+        ->dontSubmitEmptyLogs();
+}
+
+
 }
