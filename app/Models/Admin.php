@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Activitylog\Traits\LogsActivity;
+
 
 class Admin extends Authenticatable
 {
@@ -75,4 +77,14 @@ class Admin extends Authenticatable
         }
         return $hasPermission;
     }
+        protected static $logAttributes = ['name', 'email'];
+
+        protected static $logOnlyDirty = true;
+
+        protected static $logName = 'admin';
+
+        public function getDescriptionForEvent(string $eventName): string
+        {
+            return "El usuario admin {$this->name} ha realizado la acción: {$eventName}.";
+        }
 }

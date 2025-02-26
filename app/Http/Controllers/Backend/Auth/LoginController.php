@@ -7,6 +7,8 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class LoginController extends Controller
 {
@@ -58,15 +60,26 @@ class LoginController extends Controller
         // Attempt to login
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->remember)) {
             // Redirect to dashboard
+            activity('auth')
+            ->causedBy(Auth::guard('admin')->user())
+            ->withProperties(['email' => $request->email])
+            ->log('Admin successfully logged in.');
             session()->flash('success', 'Successully Logged in !');
             return redirect()->route('admin.dashboard');
         } else {
             // Search using username
             if (Auth::guard('admin')->attempt(['username' => $request->email, 'password' => $request->password], $request->remember)) {
+                activity('auth')
+                ->causedBy(Auth::guard('admin')->user())
+                ->withProperties(['username' => $request->email])
+                ->log('Admin successfully logged in using username.');
                 session()->flash('success', 'Successully Logged in !');
                 return redirect()->route('admin.dashboard');
             }
             // error
+            activity('auth')
+            ->withProperties(['email' => $request->email])
+            ->log('Failed login attempt for admin.');
             session()->flash('error', 'Invalid email and password');
             return back();
         }
@@ -78,7 +91,10 @@ class LoginController extends Controller
      * @return void
      */
     public function logout()
-    {
+    {   activity('auth')
+        ->causedBy(Auth::guard('admin')->user())
+        ->log('Admin logged out.');
+
         Auth::guard('admin')->logout();
         return redirect()->route('admin.login');
     }

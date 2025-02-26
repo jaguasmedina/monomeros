@@ -11,9 +11,14 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Facades\Log;
 
 class AdminsController extends Controller
 {
+    use LogsActivity;
+
     public function index(): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['admin.view']);
@@ -42,6 +47,11 @@ class AdminsController extends Controller
         $admin->email = $request->email;
         $admin->password = Hash::make($request->password);
         $admin->save();
+
+        activity()
+        ->causedBy(auth()->user())
+        ->performedOn($usuario)
+        ->log("Usuario {$usuario->nombre_completo} ha sido creado");
 
         if ($request->roles) {
             $admin->assignRole($request->roles);
@@ -79,6 +89,10 @@ class AdminsController extends Controller
         if ($request->roles) {
             $admin->assignRole($request->roles);
         }
+        activity()
+        ->causedBy(auth()->user())
+        ->performedOn($usuario)
+        ->log("Usuario {$usuario->nombre_completo} ha sido actualizado");
 
         session()->flash('success', 'Admin has been updated.');
         return back();
@@ -90,6 +104,10 @@ class AdminsController extends Controller
 
         $admin = Admin::findOrFail($id);
         $admin->delete();
+        activity()
+        ->causedBy(auth()->user())
+        ->performedOn($usuario)
+        ->log("Usuario {$usuario->nombre_completo} ha sido eliminado");
         session()->flash('success', 'Admin has been deleted.');
         return back();
     }

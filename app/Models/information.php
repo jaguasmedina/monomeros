@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+
 class information extends Model
 {
     use HasFactory;
@@ -29,4 +31,15 @@ class information extends Model
     ];
 
     public $timestamps = true;
+
+        protected static $logAttributes = ['tipo', 'nombre_completo', 'empresa', 'estado'];
+
+        protected static $logOnlyDirty = true;
+
+        protected static $logName = 'informacion';
+
+        public function getDescriptionForEvent(string $eventName): string
+        {
+            return "El usuario " . auth()->user()->name . " ha realizado la acción: {$eventName} en información.";
+        }
 }

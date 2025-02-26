@@ -11,9 +11,14 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class RolesController extends Controller
 {
+    use LogsActivity;
+
     public function index(): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['role.view']);
@@ -46,7 +51,7 @@ class RolesController extends Controller
         if (!empty($permissions)) {
             $role->syncPermissions($permissions);
         }
-
+        activity('roles')->causedBy(auth()->user())->withProperties(['role' => $role->name])->log('Rol Creado.');
         session()->flash('success', 'Role has been created.');
         return redirect()->route('admin.roles.index');
     }
@@ -84,7 +89,7 @@ class RolesController extends Controller
             $role->save();
             $role->syncPermissions($permissions);
         }
-
+        activity('roles')->causedBy(auth()->user())->withProperties(['role' => $role->name])->log('Actualizo un rol.');
         session()->flash('success', 'Role has been updated.');
         return back();
     }
@@ -100,7 +105,17 @@ class RolesController extends Controller
         }
 
         $role->delete();
+        activity('roles')->causedBy(auth()->user())->withProperties(['role' => $role->name])->log('Rol Eliminado.');
         session()->flash('success', 'Role has been deleted.');
         return redirect()->route('admin.roles.index');
+    }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'guard_name'])
+            ->useLogName('roles')
+            ->setDescriptionForEvent(fn(string $eventName) => "Se ha realizado la acción: {$eventName} en un rol")
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }
