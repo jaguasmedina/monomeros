@@ -49,8 +49,7 @@ class AdminsController extends Controller
         $admin->password = Hash::make($request->password);
         $admin->save();
 
-        activity()
-        ->useLogName('administrador')
+        activity('administrador')
         ->causedBy(auth()->user())
         ->performedOn($admin)
         ->log("Usuario {$admin->name} ha sido creado");
@@ -91,8 +90,7 @@ class AdminsController extends Controller
         if ($request->roles) {
             $admin->assignRole($request->roles);
         }
-        activity()
-        ->useLogName('administrador')
+        activity('administrador')
         ->causedBy(auth()->user())
         ->performedOn($admin)
         ->log("Usuario {$admin->name} ha sido actualizado");
@@ -107,8 +105,7 @@ class AdminsController extends Controller
 
         $admin = Admin::findOrFail($id);
         $admin->delete();
-        activity()
-        ->useLogName('administrador')
+        activity('administrador')
         ->causedBy(auth()->user())
         ->performedOn($admin)
         ->log("Usuario {$admin->name} ha sido eliminado");

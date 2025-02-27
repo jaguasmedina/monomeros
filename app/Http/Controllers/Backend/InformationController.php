@@ -42,6 +42,7 @@ class InformationController extends Controller
         $usuario = Information::create($request->all());
 
         activity()
+        ->useLogName('Information')
             ->causedBy(auth()->user())
             ->performedOn($usuario)
             ->withProperties(['attributes' => $request->all()])
@@ -67,6 +68,7 @@ class InformationController extends Controller
         $usuario->update($request->all());
 
         activity()
+        ->useLogName('Information')
             ->causedBy(auth()->user())
             ->performedOn($usuario)
             ->withProperties(['attributes' => $request->all()])
@@ -84,6 +86,7 @@ class InformationController extends Controller
         $usuario->delete();
 
         activity()
+        ->useLogName('Information')
             ->causedBy(auth()->user())
             ->performedOn($usuario)
             ->log('eliminó un usuario');
@@ -102,6 +105,7 @@ class InformationController extends Controller
         Excel::import(new InformacionImport, $request->file('file'));
 
         activity()
+        ->useLogName('Information')
             ->causedBy(auth()->user())
             ->log('importó datos desde un archivo');
 
@@ -118,7 +122,7 @@ class InformationController extends Controller
     {
         return LogOptions::defaults()
             ->logOnly(['name', 'email', 'created_at', 'updated_at'])
-            ->useLogName('information')
+            ->useLogName('Information')
             ->setDescriptionForEvent(fn(string $eventName) => "Se ha realizado la acción: {$eventName} en un usuario")
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();

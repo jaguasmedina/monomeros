@@ -39,40 +39,31 @@
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title float-left">{{ __('Admins') }}</h4>
-                    <p class="float-right mb-2">
-                        @if (auth()->user()->can('admin.edit'))
-                            <a class="btn btn-primary text-white" href="{{ route('admin.admins.create') }}">
-                                {{ __('Crear Nuevo Usuario') }}
-                            </a>
-                        @endif
-                    </p>
+                    <h4 class="header-title float-left">{{ __('Logs') }}</h4>
+
                     <div class="clearfix"></div>
                     <div class="data-tables">
                         @include('backend.layouts.partials.messages')
                         <table id="dataTable" class="text-center">
                             <thead class="bg-light text-capitalize">
                                 <tr>
-                                    <th width="5%">{{ __('Sl') }}</th>
-                                    <th width="10%">{{ __('Name') }}</th>
-                                    <th width="10%">{{ __('Email') }}</th>
-                                    <th width="40%">{{ __('Roles') }}</th>
-                                    <th width="15%">{{ __('Action') }}</th>
+                                    <th width="15%">{{ __('Modulo') }}</th>
+                                    <th width="15%">{{ __('Descripción') }}</th>
+                                    <th width="15%">{{ __('Acción') }}</th>
+                                    <th width="15%">{{ __('Afectado') }}</th>
+                                    <th width="15%">{{ __('Quien realizo la acción') }}</th>
+                                    <th width="15%">{{ __('Fecha Accción') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                               @foreach ($admins as $admin)
+                               @foreach ($logs as $log)
                                <tr>
-                                    <td>{{ $loop->index+1 }}</td>
-                                    <td>{{ $admin->name }}</td>
-                                    <td>{{ $admin->email }}</td>
-                                    <td>
-                                        @foreach ($admin->roles as $role)
-                                            <span class="badge badge-info mr-1">
-                                                {{ $role->name }}
-                                            </span>
-                                        @endforeach
-                                    </td>
+                                    <td>{{ $log->log_name }}</td>
+                                    <td>{{ $log->description }}</td>
+                                    <td>{{ $log->properties }}</td>
+                                    <td>{{ optional($log->subject)->name ?? '-' }}</td>
+                                    <td>{{ optional($log->causer)->name ?? '-' }}</td>
+                                    <td>{{ $log->created_at }}</td>
                                    </tr>
                                @endforeach
                             </tbody>
