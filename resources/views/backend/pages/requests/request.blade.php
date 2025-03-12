@@ -39,11 +39,11 @@
                         <div class="form-row">
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label>Fecha</label>
-                                    <input type="date" name="fecha_registro" class="form-control" id="fecha_registro" placeholder="Fecha Registro" value="{{ old('fecha_registro') }}">
+                                    <input type="date" required name="fecha_registro" class="form-control" id="fecha_registro" placeholder="Fecha Registro" value="{{ old('fecha_registro') }}">
                                 </div>
                                 <div class="form-group  col-md-6 col-sm-12">
                                     <label>Razón Social</label>
-                                    <input type="text" name="razon_social" class="form-control" placeholder="Razón Social" value="{{ old('razon_social') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                                    <input type="text" required  name="razon_social" class="form-control" placeholder="Razón Social" value="{{ old('razon_social') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
                                 </div>
                         </div>
                             <div class="form-row">
@@ -59,13 +59,13 @@
                                 </div>
                                 <div class="form-group  col-md-6 col-sm-12">
                                     <label>Número de ID</label>
-                                    <input type="text" name="identificador" placeholder="Identificador" value="{{ old('identificador') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" maxlength="50">
+                                    <input type="text" required  name="identificador" placeholder="Identificador" value="{{ old('identificador') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" maxlength="50">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group  col-md-12 col-sm-12">
                                     <label>Motivo</label>
-                                    <textarea name="motivo" class="form-control" placeholder="Motivo" value="{{ old('motivo') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();"></textarea>
+                                    <textarea name="motivo" required  class="form-control" placeholder="Motivo" value="{{ old('motivo') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();"></textarea>
                                 </div>
                             </div>
                             <div id="persona_natural" class="persona-section">

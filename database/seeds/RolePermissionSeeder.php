@@ -67,6 +67,13 @@ class RolePermissionSeeder extends Seeder
                 ]
             ],
             [
+                'group_name' => 'service',
+                'permissions' => [
+                    'service.view',
+                    'service.query',
+                ]
+                ],
+            [
                 'group_name' => 'log',
                 'permissions' => [
                     'log.view',

@@ -23,10 +23,7 @@ class UserServiceController extends Controller
     public function query(): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['admin.view']);
-        return view('backend.pages.dashboard.index', [
-            'admins' => Admin::all(),
-            'informations' => Information::all(),
-        ]);
+        return view('backend.pages.requests.query');
     }
     public function getActivitylogOptions(): LogOptions
     {
@@ -38,18 +35,44 @@ class UserServiceController extends Controller
             ->dontSubmitEmptyLogs();
     }
     public function store(){
+        // Validación de los datos
+        $request->validate([
+            'tipo_persona'   => 'required|in:natural,juridica',
+            'fecha_registro' => 'required|date',
+            'razon_social'   => 'required|string|max:255',
+            'tipo_id'        => 'required|string|max:10',
+            'identificador'  => 'required|string|max:50',
+            'motivo'         => 'required|string',
+            'nombre_completo'=> 'nullable|string|max:255',
+            'tipo_visitante' => 'nullable|string|in:proveedor,visitante',
+            'archivo'        => 'nullable|file|mimes:pdf|max:2048',
+            'tipo_cliente'   => 'nullable|string|in:proveedor,cliente',
+        ]);
+
+        // Manejo del archivo (si se sube)
+        $archivoPath = null;
+        if ($request->hasFile('archivo')) {
+            $archivoPath = $request->file('archivo')->store('solicitudes', 'public');
+        }
+
+        // Crear la solicitud
+        Solicitud::create([
+            'tipo_persona'   => $request->tipo_persona,
+            'fecha_registro' => $request->fecha_registro,
+            'razon_social'   => strtoupper($request->razon_social),
+            'tipo_id'        => $request->tipo_id,
+            'identificador'  => strtoupper($request->identificador),
+            'motivo'         => strtoupper($request->motivo),
+            'nombre_completo'=> strtoupper($request->nombre_completo ?? ''),
+            'tipo_visitante' => $request->tipo_visitante,
+            'archivo'        => $archivoPath,
+            'tipo_cliente'   => $request->tipo_cliente,
+        ]);
+
+        return redirect()->route('backend.pages.requests.request')->with('success', 'Solicitud creada exitosamente.');
+    }
+    public function queryreq(){
         $this->checkAuthorization(auth()->user(), ['admin.create']);
-
-       // $usuario = Information::create($request->all());
-/*
-        activity()
-        ->useLogName('Information')
-            ->causedBy(auth()->user())
-            ->performedOn($usuario)
-            ->withProperties(['attributes' => $request->all()])
-            ->log('insertó un nuevo usuario');
-
-        session()->flash('success', __('Usuario ha sido creado.'));*/
         return redirect()->route('admin.dashboard');
     }
 
