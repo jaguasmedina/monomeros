@@ -70,6 +70,14 @@
                     </li>
                     @endif
 
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true"><i class="ti-clipboard"></i><span>Solicitudes</span></a>
+                        <ul class="collapse">
+                            <li class="{{ Route::is('admin.service.request') ? 'active' : '' }}"><a href="{{ route('admin.service.request') }}">Solicitar</a></li>
+                            <li class="{{ Route::is('admin.service.query') ? 'active' : '' }}"><a href="{{ route('admin.service.query') }}">Consultar</a></li>
+                        </ul>
+                    </li>
+
                 </ul>
             </nav>
         </div>

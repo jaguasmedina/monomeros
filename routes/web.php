@@ -10,6 +10,7 @@ use App\Http\Controllers\Backend\Auth\LoginController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\RolesController;
 use App\Http\Controllers\Backend\InformationController;
+use App\Http\Controllers\Backend\UserServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('logs', [LogController::class, 'index'])->name('logs.index');
     Route::resource('informations', InformationController::class);
     Route::post('informations/import', [InformationController::class, 'import'])->name('informations.import');
+
+    Route::post('service/store', [UserServiceController::class, 'store'])->name('service.store');
+    Route::get('service/request', [UserServiceController::class, 'request'])->name('service.request');
+    Route::get('service/query', [UserServiceController::class, 'query'])->name('service.query');
 
     // Nueva vista de carga de Excel (solo para superadmin)
     Route::middleware(['auth:admin'])->group(function () {
