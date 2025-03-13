@@ -22,4 +22,8 @@ class Solicitud extends Model
         'archivo',
         'tipo_cliente'
     ];
+    public function miembros()
+    {
+        return $this->hasMany(Miembro::class, 'solicitud_id');
+    }
 }

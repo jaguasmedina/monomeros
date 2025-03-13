@@ -58,8 +58,8 @@
                             <tbody>
                               @foreach ($solicitudes as $solicitud)
                                <tr onclick="window.location='{{ route('admin.analists.show', $solicitud->id) }}';" style="cursor: pointer;">
-                                    <td>{{ $solicitud->fecha_registro}}</td>
                                     <td>{{ $solicitud->razon_social }}</td>
+                                    <td>{{ $solicitud->fecha_registro}}</td>
                                     <td>{{ $solicitud->tipo_id.' '.$solicitud->identificador }}</td>
                                     <td>{{ $solicitud->motivo }}</td>
                                     <td>{{ $solicitud->tipo_cliente }}</td>

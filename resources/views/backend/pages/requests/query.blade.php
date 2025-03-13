@@ -98,15 +98,14 @@
             if (this.value === "natural") {
                 natural.classList.remove("hidden");
                 juridica.classList.add("hidden");
-                tipoId.innerHTML = opcionesNatural; // Cambiar opciones del select
+                tipoId.innerHTML = opcionesNatural;
             } else {
                 juridica.classList.remove("hidden");
                 natural.classList.add("hidden");
-                tipoId.innerHTML = opcionesJuridica; // Cambiar opciones del select
+                tipoId.innerHTML = opcionesJuridica;
             }
         });
 
-        // Para cargar la opción correcta al recargar la página con valores antiguos
         if (tipoPersona.value === "natural") {
             tipoId.innerHTML = opcionesNatural;
         } else {

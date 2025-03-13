@@ -24,36 +24,36 @@ password - 12345678
     - Tag - https://github.com/ManiruzzamanAkash/laravel-role/releases/tag/Laravel11.x
 
 ## Project Setup
-Git clone -
+Ir al proyecto -
 ```console
-git clone https://github.com/ManiruzzamanAkash/laravel-role.git
+cd monomeros
 ```
 
-Go to project folder -
-```console
-cd laravel-role
-```
-
-Install Laravel Dependencies -
+Instalar las dependecias
 ```console
 composer install
 ```
 
-Create database called - `laravel_role`
+Crear la base de datos - `monomeros`
 
-Create `.env` file by copying `.env.example` file
+Crear el archivo `.env` copiando de `.env.example`
 
-Generate Artisan Key (If needed) -
+Generar la llave 
 ```console
 php artisan key:generate
 ```
 
-Migrate Database with seeder -
+Correr las migraciones y los seeder -
 ```console
 php artisan migrate --seed
 ```
 
-Run Project -
+Crear un enlace simbolico -
+```console
+php artisan storage:link
+```
+
+Correr proyecto -
 ```php
 php artisan serve
 ```

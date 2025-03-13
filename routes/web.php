@@ -47,6 +47,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
     Route::get('analists/index', [AnalistsController::class, 'index'])->name('analists.index');
     Route::get('analists/show/{id}', [AnalistsController::class, 'show'])->name('analists.show');
+    Route::post('analists/{id}/save', [AnalistsController::class, 'save'])->name('analists.save');
+    Route::delete('analists/deletemember/{id}', [AnalistsController::class, 'eliminarMiembro'])->name('admin.analists.deletemember');
 
     // Nueva vista de carga de Excel (solo para superadmin)
     Route::middleware(['auth:admin'])->group(function () {

@@ -36,7 +36,6 @@ class UserServiceController extends Controller
             ->dontSubmitEmptyLogs();
     }
     public function store(Request $request){
-        // Validación de los datos
         $request->validate([
             'tipo_persona'   => 'required|in:natural,juridica',
             'fecha_registro' => 'required|date',
@@ -46,16 +45,14 @@ class UserServiceController extends Controller
             'motivo'         => 'required|string',
             'nombre_completo'=> 'nullable|string|max:255',
             'archivo'        => 'nullable|file|mimes:pdf|max:2048',
-            'tipo_cliente'   => 'nullable|string|in:proveedor,cliente,visitante',
+            'tipo_cliente'   => 'nullable|string|in:proveedor,cliente,visitante,contratista',
         ]);
 
-        // Manejo del archivo (si se sube)
         $archivoPath = null;
         if ($request->hasFile('archivo')) {
             $archivoPath = $request->file('archivo')->store('solicitudes', 'public');
         }
 
-        // Crear la solicitud
         $solicitud = Solicitud::create([
             'tipo_persona'   => $request->tipo_persona,
             'fecha_registro' => $request->fecha_registro,
