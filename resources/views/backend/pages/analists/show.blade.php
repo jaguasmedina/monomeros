@@ -25,26 +25,32 @@
                 <div class="card-body">
                     <h4 class="header-title">Consultar Solicitud</h4>
                     @include('backend.layouts.partials.messages')
-                    <form action="{{ route('admin.service.queryreq') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.analists.index') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                                 <div class="form-group  col-md-6 col-sm-12">
                                     <label>Numero Solicitud</label>
-                                    <input type="text" name="numero_solicitud" class="form-control" placeholder="Numero Solicitud" value="{{ old('numero_solicitud') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                                    <input type="text" readonly name="numero_solicitud" class="form-control" placeholder="Numero Solicitud" value="{{ $solicitud->id }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
                                 </div>
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label>Fecha</label>
-                                    <input type="date" name="fecha_registro" class="form-control" id="fecha_registro" placeholder="Fecha Registro" value="{{ old('fecha_registro') }}">
+                                    <input type="date" readonly name="fecha_registro" class="form-control" id="fecha_registro" placeholder="Fecha Registro" value="{{ $solicitud->fecha_registro }}">
                                 </div>
                         </div>
                             <div class="form-row">
                                 <div class="form-group  col-md-6 col-sm-12">
-                                    <label>Número de ID</label>
-                                    <input type="text" name="identificador" placeholder="Identificador" value="{{ old('identificador') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" maxlength="50">
+                                    <label>Razón Social</label>
+                                    <input type="text" readonly name="identificador" placeholder="Identificador" value="{{ $solicitud->razon_social }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" maxlength="50">
                                 </div>
                                 <div class="form-group col-md-6 col-sm-12">
-                                    <label>Nombre Completo</label>
-                                    <input type="text" class="form-control" placeholder="Nombre Completo" value="{{ old('nombre_completo') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                                    <label>Identificación</label>
+                                    <input type="text" readonly class="form-control" placeholder="Nombre Completo" value="{{ $solicitud->tipo_id  }}  {{ $solicitud->identificador }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group  col-md-12 col-sm-12">
+                                    <label>Motivo</label>
+                                    <textarea name="motivo" readonly required  class="form-control" placeholder="Motivo" value="{{ $solicitud->motivo }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();"></textarea>
                                 </div>
                             </div>
 

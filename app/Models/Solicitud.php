@@ -19,7 +19,6 @@ class Solicitud extends Model
         'identificador',
         'motivo',
         'nombre_completo',
-        'tipo_visitante',
         'archivo',
         'tipo_cliente'
     ];

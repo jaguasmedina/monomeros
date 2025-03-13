@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Models\Solicitud;
 
 class UserServiceController extends Controller
 {
@@ -34,7 +35,7 @@ class UserServiceController extends Controller
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
-    public function store(){
+    public function store(Request $request){
         // Validación de los datos
         $request->validate([
             'tipo_persona'   => 'required|in:natural,juridica',
@@ -44,9 +45,8 @@ class UserServiceController extends Controller
             'identificador'  => 'required|string|max:50',
             'motivo'         => 'required|string',
             'nombre_completo'=> 'nullable|string|max:255',
-            'tipo_visitante' => 'nullable|string|in:proveedor,visitante',
             'archivo'        => 'nullable|file|mimes:pdf|max:2048',
-            'tipo_cliente'   => 'nullable|string|in:proveedor,cliente',
+            'tipo_cliente'   => 'nullable|string|in:proveedor,cliente,visitante',
         ]);
 
         // Manejo del archivo (si se sube)
@@ -56,7 +56,7 @@ class UserServiceController extends Controller
         }
 
         // Crear la solicitud
-        Solicitud::create([
+        $solicitud = Solicitud::create([
             'tipo_persona'   => $request->tipo_persona,
             'fecha_registro' => $request->fecha_registro,
             'razon_social'   => strtoupper($request->razon_social),
@@ -64,12 +64,14 @@ class UserServiceController extends Controller
             'identificador'  => strtoupper($request->identificador),
             'motivo'         => strtoupper($request->motivo),
             'nombre_completo'=> strtoupper($request->nombre_completo ?? ''),
-            'tipo_visitante' => $request->tipo_visitante,
             'archivo'        => $archivoPath,
             'tipo_cliente'   => $request->tipo_cliente,
         ]);
+        $solicitudId = $solicitud->id;
 
-        return redirect()->route('backend.pages.requests.request')->with('success', 'Solicitud creada exitosamente.');
+        return redirect()->route('admin.service.request')
+                ->with('success', 'Solicitud creada exitosamente')
+                ->with('solicitud_id', $solicitud->id);
     }
     public function queryreq(){
         $this->checkAuthorization(auth()->user(), ['admin.create']);

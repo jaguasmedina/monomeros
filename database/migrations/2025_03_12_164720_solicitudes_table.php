@@ -13,16 +13,17 @@ return new class extends Migration
     {
         Schema::create('solicitudes', function (Blueprint $table) {
             $table->id();
-            $table->string('tipo_persona'); // natural o jurídica
+            $table->string('tipo_persona');
             $table->date('fecha_registro');
             $table->string('razon_social');
             $table->string('tipo_id');
             $table->string('identificador', 50);
             $table->text('motivo');
-            $table->string('nombre_completo')->nullable(); // No requerido
-            $table->string('tipo_visitante')->nullable(); // Solo para persona natural
-            $table->string('archivo')->nullable(); // PDF, no requerido
-            $table->string('tipo_cliente')->nullable(); // Solo para persona jurídica
+            $table->string('nombre_completo')->nullable();
+            $table->string('tipo_cliente')->nullable();
+            $table->string('estado')->default('enviado');
+            $table->string('tipo_visitante')->nullable();
+            $table->string('archivo')->nullable();
             $table->timestamps();
         });
     }

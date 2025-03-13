@@ -17,7 +17,6 @@
         </div>
     </div>
 </div>
-
 <div class="main-content-inner">
     <div class="row">
         <div class="col-12 mt-5">
@@ -25,6 +24,11 @@
                 <div class="card-body">
                     <h4 class="header-title">Nueva Solicitud</h4>
                     @include('backend.layouts.partials.messages')
+                    @if (session('solicitud_id'))
+                        <div class="alert alert-info">
+                            ID de la solicitud creada: <h1></h1><strong>{!! session('solicitud_id') !!}</strong></h1>
+                        </div>
+                    @endif
                     <form action="{{ route('admin.service.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
@@ -39,11 +43,11 @@
                         <div class="form-row">
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label>Fecha</label>
-                                    <input type="date" required name="fecha_registro" class="form-control" id="fecha_registro" placeholder="Fecha Registro" value="{{ old('fecha_registro') }}">
+                                    <input type="date" name="fecha_registro" class="form-control" id="fecha_registro" value="{{ old('fecha_registro', now()->format('Y-m-d')) }}" required>
                                 </div>
                                 <div class="form-group  col-md-6 col-sm-12">
                                     <label>Razón Social</label>
-                                    <input type="text" required  name="razon_social" class="form-control" placeholder="Razón Social" value="{{ old('razon_social') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                                    <input type="text" required  name="razon_social" id="razon_social" class="form-control" placeholder="Razón Social" value="{{ old('razon_social') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
                                 </div>
                         </div>
                             <div class="form-row">
@@ -68,37 +72,28 @@
                                     <textarea name="motivo" required  class="form-control" placeholder="Motivo" value="{{ old('motivo') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();"></textarea>
                                 </div>
                             </div>
-                            <div id="persona_natural" class="persona-section">
+
                             <div class="form-row">
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Nombre Completo</label>
-                                    <input type="text" class="form-control" placeholder="Nombre Completo" value="{{ old('nombre_completo') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
-                                </div>
+
+                                    <div class="form-group col-md-6 col-sm-12" id="persona_natural">
+                                        <label>Nombre Completo</label>
+                                        <input type="text" class="form-control" name="nombre_completo" id="nombre_completo" placeholder="Nombre Completo" value="{{ old('nombre_completo') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                                    </div>
+
+
+                                    <div class="form-group col-md-6 col-sm-12 hidden" id="persona_juridica" class="persona-section ">
+                                        <label>Subir Archivo</label>
+                                        <input type="file" name="archivo" class="form-control">
+                                    </div>
+
                                 <div class="form-group  col-md-6 col-sm-12">
                                     <label>Tipo de Visitante</label>
-                                    <select name="tipo_visitante" class="form-control select2">
-                                        <option value="proveedor">Proveedor</option>
+                                    <select name="tipo_cliente" id="tipo_cliente" class="form-control select2">
+                                        <option value="contratista">Contratista</option>
                                         <option value="visitante">Visitante</option>
                                     </select>
                                 </div>
                             </div>
-                            </div>
-                            <div id="persona_juridica" class="persona-section hidden">
-                                <div class="form-row">
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Subir Archivo</label>
-                                    <input type="file" name="archivo" class="form-control">
-                                </div>
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Tipo de Cliente</label>
-                                    <select name="tipo_cliente" class="form-control">
-                                        <option value="proveedor">Proveedor</option>
-                                        <option value="cliente">Cliente</option>
-                                    </select>
-                                </div>
-                                </div>
-                            </div>
-
 
                         <button type="submit" class="btn btn-primary">Guardar</button>
                         <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
@@ -132,7 +127,7 @@
         let natural = document.getElementById("persona_natural");
         let juridica = document.getElementById("persona_juridica");
         let tipoId = document.getElementById("tipo_id");
-
+        let tipo_cliente = document.getElementById("tipo_cliente");
         const opcionesNatural = `
             <option value="cc">C.C.</option>
             <option value="ce">C.E.</option>
@@ -145,24 +140,37 @@
             <option value="nit">NIT</option>
             <option value="internacional">INTERNACIONAL</option>
         `;
+        const opcionesNaturalTipo = `
+            <option value="contratista">Contratista</option>
+            <option value="visitante">Visitante</option>
+        `;
+
+        const opcionesJuridicaTipo = `
+            <option value="cliente">Cliente</option>
+            <option value="proveedor">Proveedor</option>
+        `;
 
         tipoPersona.addEventListener("change", function() {
             if (this.value === "natural") {
                 natural.classList.remove("hidden");
                 juridica.classList.add("hidden");
-                tipoId.innerHTML = opcionesNatural; // Cambiar opciones del select
+                tipoId.innerHTML = opcionesNatural;
+                tipo_cliente.innerHTML = opcionesNaturalTipo;
             } else {
                 juridica.classList.remove("hidden");
                 natural.classList.add("hidden");
-                tipoId.innerHTML = opcionesJuridica; // Cambiar opciones del select
+                tipoId.innerHTML = opcionesJuridica;
+                tipo_cliente.innerHTML = opcionesJuridicaTipo;
             }
         });
 
         // Para cargar la opción correcta al recargar la página con valores antiguos
         if (tipoPersona.value === "natural") {
             tipoId.innerHTML = opcionesNatural;
+            tipo_cliente.innerHTML = opcionesNaturalTipo;
         } else {
             tipoId.innerHTML = opcionesJuridica;
+            tipo_cliente.innerHTML = opcionesJuridicaTipo;
         }
     });
 </script>

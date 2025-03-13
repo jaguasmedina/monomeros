@@ -78,6 +78,10 @@
                         </ul>
                     </li>
 
+                    <li class="{{ Route::is('admin.analists.index') ? 'active' : '' }}">
+                        <a href="{{ route('admin.analists.index') }}"><i class="fa fa-tasks"></i> Listado Solicitudes</a>
+                   </li>
+
                 </ul>
             </nav>
         </div>

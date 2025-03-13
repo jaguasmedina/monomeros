@@ -37,6 +37,6 @@
                 alert.classList.add('fade');
                 setTimeout(() => alert.remove(), 1000);
             });
-        }, 10000);
+        }, 15000);
     });
 </script>

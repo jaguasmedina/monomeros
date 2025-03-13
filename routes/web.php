@@ -11,6 +11,7 @@ use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\RolesController;
 use App\Http\Controllers\Backend\InformationController;
 use App\Http\Controllers\Backend\UserServiceController;
+use App\Http\Controllers\Backend\AnalistsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('service/request', [UserServiceController::class, 'request'])->name('service.request');
     Route::get('service/query', [UserServiceController::class, 'query'])->name('service.query');
     Route::get('service/queryreq', [UserServiceController::class, 'queryreq'])->name('service.queryreq');
+
+    Route::get('analists/index', [AnalistsController::class, 'index'])->name('analists.index');
+    Route::get('analists/show/{id}', [AnalistsController::class, 'show'])->name('analists.show');
 
     // Nueva vista de carga de Excel (solo para superadmin)
     Route::middleware(['auth:admin'])->group(function () {
