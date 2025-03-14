@@ -72,7 +72,25 @@ class RolePermissionSeeder extends Seeder
                     'service.view',
                     'service.query',
                 ]
-                ],
+            ],
+            [
+                'group_name' => 'analist',
+                'permissions' => [
+                    'analist.view',
+                ]
+            ],
+            [
+                'group_name' => 'Approver',
+                'permissions' => [
+                    'approver.view',
+                ]
+            ],
+            [
+                'group_name' => 'Approver 2',
+                'permissions' => [
+                    'approver2.view',
+                ]
+            ],
             [
                 'group_name' => 'log',
                 'permissions' => [

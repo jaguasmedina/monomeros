@@ -79,7 +79,15 @@
                     </li>
 
                     <li class="{{ Route::is('admin.analists.index') ? 'active' : '' }}">
-                        <a href="{{ route('admin.analists.index') }}"><i class="fa fa-tasks"></i> Listado Solicitudes</a>
+                        <a href="{{ route('admin.analists.index') }}"><i class="fa fa-list"></i> Listado Solicitudes</a>
+                   </li>
+
+                   <li class="{{ Route::is('admin.approver.index') ? 'active' : '' }}">
+                    <a href="{{ route('admin.approver.index') }}"><i class="fa fa-list"></i> Solicitudes pendientes de aprobación </a>
+                   </li>
+
+                   <li class="{{ Route::is('admin.approver2.index') ? 'active' : '' }}">
+                    <a href="{{ route('admin.approver2.index') }}"><i class="fa fa-list"></i>Solicitudes pendientes de aprobación</a>
                    </li>
 
                 </ul>

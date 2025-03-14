@@ -12,6 +12,7 @@ use App\Http\Controllers\Backend\RolesController;
 use App\Http\Controllers\Backend\InformationController;
 use App\Http\Controllers\Backend\UserServiceController;
 use App\Http\Controllers\Backend\AnalistsController;
+use App\Http\Controllers\Backend\ApproverController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('analists/show/{id}', [AnalistsController::class, 'show'])->name('analists.show');
     Route::post('analists/{id}/save', [AnalistsController::class, 'save'])->name('analists.save');
     Route::delete('analists/deletemember/{id}', [AnalistsController::class, 'eliminarMiembro'])->name('admin.analists.deletemember');
+
+    Route::get('approver/index', [ApproverController::class, 'index'])->name('approver.index');
+    Route::get('approver/show/{id}', [ApproverController::class, 'show'])->name('approver.show');
+    Route::post('approver/save/{id}', [ApproverController::class, 'save'])->name('approver.save');
+    Route::get('approver2/index', [ApproverController::class, 'index2'])->name('approver2.index');
+    Route::get('approver2/show/{id}', [ApproverController::class, 'show2'])->name('approver2.show');
+    Route::post('approver2/save/{id}', [ApproverController::class, 'save2'])->name('approver2.save');
 
     // Nueva vista de carga de Excel (solo para superadmin)
     Route::middleware(['auth:admin'])->group(function () {
