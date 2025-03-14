@@ -43,7 +43,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::post('service/store', [UserServiceController::class, 'store'])->name('service.store');
     Route::get('service/request', [UserServiceController::class, 'request'])->name('service.request');
     Route::get('service/query', [UserServiceController::class, 'query'])->name('service.query');
-    Route::get('service/queryreq', [UserServiceController::class, 'queryreq'])->name('service.queryreq');
+    Route::post('service/queryreq', [UserServiceController::class, 'queryreq'])->name('service.queryreq');
 
     Route::get('analists/index', [AnalistsController::class, 'index'])->name('analists.index');
     Route::get('analists/show/{id}', [AnalistsController::class, 'show'])->name('analists.show');

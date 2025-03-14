@@ -32,25 +32,48 @@
                                     <label>Numero Solicitud</label>
                                     <input type="text" name="numero_solicitud" class="form-control" placeholder="Numero Solicitud" value="{{ old('numero_solicitud') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
                                 </div>
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Fecha</label>
-                                    <input type="date" name="fecha_registro" class="form-control" id="fecha_registro" placeholder="Fecha Registro" value="{{ old('fecha_registro') }}">
-                                </div>
-                        </div>
-                            <div class="form-row">
                                 <div class="form-group  col-md-6 col-sm-12">
                                     <label>Número de ID</label>
                                     <input type="text" name="identificador" placeholder="Identificador" value="{{ old('identificador') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" maxlength="50">
                                 </div>
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Nombre Completo</label>
-                                    <input type="text" class="form-control" placeholder="Nombre Completo" value="{{ old('nombre_completo') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
-                                </div>
-                            </div>
 
-                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Consultar</button>
                         <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
                     </form>
+                    <!-- Mostrar resultados si existen solicitudes -->
+                    @if(isset($solicitud) && $solicitud->isNotEmpty())
+                        <div class="mt-4">
+                            <h5>Resultados de la Consulta : {{ $identificador }}</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ID Solicitud</th>
+                                            <th>Razón Social</th>
+                                            <th>Motivo</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($solicitud as $solicitu)
+                                            <tr>
+                                                <td>{{ $solicitu->id }}</td>
+                                                <td>{{ $solicitu->razon_social }}</td>
+                                                <td>{{ $solicitu->motivo }}</td>
+                                                <td>{{ $solicitu->estado }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @elseif(isset($numero_solicitud) || isset($identificador))
+                        <div class="alert alert-warning mt-4">
+                            No se encontraron solicitudes con los datos proporcionados.
+                        </div>
+                    @endif
+
                 </div>
             </div>
         </div>

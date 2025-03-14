@@ -51,6 +51,7 @@ class AnalistsController extends Controller
 
         $actualizarSolicitud = false;
         $motivoRechazo = null;
+        $estado = 'enviado';
 
         Miembro::where('solicitud_id', $id)->delete();
         foreach ($request->miembros as $miembroData) {
@@ -67,11 +68,18 @@ class AnalistsController extends Controller
         if ($miembroData['favorable'] === "no") {
             $actualizarSolicitud = true;
             $motivoRechazo = $request->concepto_no_favorable ?? "No especificado";
+            $estado = 'documentacion';
+        }else{
+            $estado = 'aprobador';
         }
         if ($actualizarSolicitud) {
             Solicitud::where('id', $id)->update([
-                'estado' => 'documentacion',
-                'motivo' => $motivoRechazo
+                'motivo' => $motivoRechazo,
+                'estado' => $estado
+            ]);
+        }else{
+            Solicitud::where('id', $id)->update([
+                'estado' => $estado
             ]);
         }
 

@@ -115,7 +115,7 @@
                                 <textarea name="concepto_no_favorable" id="concepto_no_favorable" class="form-control" placeholder="Explique el motivo">{{ $solicitud->miembros->where('favorable', 'no')->first()?->concepto_no_favorable ?? '' }}</textarea>
                             </div>
                             <br>
-                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                         <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
                     </form>
                 </div>

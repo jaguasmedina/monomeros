@@ -70,9 +70,26 @@ class UserServiceController extends Controller
                 ->with('success', 'Solicitud creada exitosamente')
                 ->with('solicitud_id', $solicitud->id);
     }
-    public function queryreq(){
+    public function queryreq(Request $request ){
         $this->checkAuthorization(auth()->user(), ['admin.create']);
-        return redirect()->route('admin.dashboard');
+        $request->validate([
+            'numero_solicitud' => 'nullable|integer',
+            'identificador' => 'nullable|string|max:50',
+        ]);
+        $solicitud = Solicitud::when($request->numero_solicitud, function ($query, $numero_solicitud) {
+            return $query->where('id', $numero_solicitud);
+        })
+        ->when($request->identificador, function ($query, $identificador) {
+            return $query->where('identificador', $identificador);
+        })
+        ->get();
+
+        return view('backend.pages.requests.query', [
+            'solicitud' => $solicitud,
+            'numero_solicitud' => $request->numero_solicitud,
+            'identificador' => $request->identificador
+        ]);
+
     }
 
 }
