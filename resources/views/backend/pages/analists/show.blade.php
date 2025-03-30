@@ -25,7 +25,7 @@
                 <div class="card-body">
                     <h4 class="header-title">Consultar Solicitud</h4>
                     @include('backend.layouts.partials.messages')
-                    <form action="{{ route('admin.analists.save', $solicitud->id) }}" method="POST" enctype="multipart/form-data">
+                    <form id="solicitudForm" action="{{ route('admin.analists.save', $solicitud->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                                 <div class="form-group  col-md-6 col-sm-12">
@@ -50,7 +50,7 @@
                             <div class="form-row">
                                 <div class="form-group  col-md-8 col-sm-12">
                                     <label>Motivo</label>
-                                    <textarea name="motivo" readonly required  class="form-control" placeholder="Motivo" value="{{ $solicitud->motivo }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();"></textarea>
+                                    <textarea name="motivo" readonly required  class="form-control" placeholder="Motivo" value="{{ $solicitud->motivo }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">{{ $solicitud->motivo }}</textarea>
                                 </div>
                                 <div class="form-group col-md-4 col-sm-12">
                                     <label>Descargar Documento</label>
@@ -108,16 +108,35 @@
                                     </div>
                                 @endforeach
                             </div>
-
-
                             <div id="conceptoContainer" class="form-group col-md-12 col-sm-12 {{ $solicitud->miembros->where('favorable', 'no')->count() ? '' : 'hidden' }}">
                                 <label>Concepto de No Favorable</label>
                                 <textarea name="concepto_no_favorable" id="concepto_no_favorable" class="form-control" placeholder="Explique el motivo">{{ $solicitud->miembros->where('favorable', 'no')->first()?->concepto_no_favorable ?? '' }}</textarea>
                             </div>
                             <br>
+
                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <a href="#" onclick="showDevuelto(1)" class="btn btn-secondary">Devolver</a>
                         <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
                     </form>
+                    <form id="devueltoForm" class="hidden" action="{{ route('admin.analists.savenf', $solicitud->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group  col-md-6 col-sm-12">
+                            <label>Numero Solicitud</label>
+                            <input type="text" readonly name="numero_solicitud" class="form-control" placeholder="Numero Solicitud" value="{{ $solicitud->id }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
+                        </div>
+                        <div id="conceptoContainer" class="form-group col-md-12 col-sm-12">
+                            <label>Concepto de Devolución</label>
+                            <textarea name="concepto_no_favorable" id="concepto_no_favorable" class="form-control" placeholder="Explique el motivo">{{ $solicitud->miembros->where('favorable', 'no')->first()?->concepto_no_favorable ?? '' }}</textarea>
+                        </div>
+                        <div class="form-group col-md-2 col-sm-12">
+                            <label>Razón de devolución.</label>
+                            <select name="razon_documentacion" id="razon_documentacion" class="form-control favorable-select" required>
+                                <option value="documentacion">Documentación</option>
+                                <option value="entregado">Otro</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <a href="#" onclick="showDevuelto(2)" class="btn btn-secondary">Regresar</a>
                 </div>
             </div>
         </div>
@@ -127,6 +146,19 @@
 
 @section('scripts')
 <script>
+    function showDevuelto(id){
+        if(id == 1){
+            let devueltoForm = document.getElementById("devueltoForm");
+            let solicitudForm = document.getElementById("solicitudForm");
+            devueltoForm.classList.remove("hidden");
+            solicitudForm.classList.add("hidden");
+        }else{
+            let devueltoForm = document.getElementById("devueltoForm");
+            let solicitudForm = document.getElementById("solicitudForm");
+            solicitudForm.classList.remove("hidden");
+            devueltoForm.classList.add("hidden");
+        }
+    }
     document.addEventListener("DOMContentLoaded", function() {
         let tipoPersona = document.getElementById("tipo_persona");
         let natural = document.getElementById("persona_natural");
@@ -181,135 +213,96 @@
     });
 </script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let maxMembers = 2;
-        let memberCount = 0;
-        let membersContainer = document.getElementById("membersContainer");
-        let conceptoContainer = document.getElementById("conceptoContainer");
-        let addMemberBtn = document.getElementById("addMemberBtn");
+document.addEventListener("DOMContentLoaded", function() {
+    let maxMembers = 2;
+    let memberCount = document.querySelectorAll("#membersContainer .member").length;
+    let membersContainer = document.getElementById("membersContainer");
+    let conceptoContainer = document.getElementById("conceptoContainer");
+    let addMemberBtn = document.getElementById("addMemberBtn");
 
+    function contarMiembros() {
+        return document.querySelectorAll("#membersContainer .member").length;
+    }
 
-        function contarMiembros() {
-            return document.querySelectorAll("#membersContainer .member").length;
-        }
+    function verificarLimiteMiembros() {
+        addMemberBtn.disabled = contarMiembros() >= maxMembers;
+    }
 
-        function verificarLimiteMiembros() {
-            let totalMiembros = contarMiembros();
-            addMemberBtn.disabled = totalMiembros >= maxMembers;
-        }
+    addMemberBtn.addEventListener("click", function() {
+        if (contarMiembros() < maxMembers) {
+            memberCount++;
+            let memberDiv = document.createElement("div");
+            memberDiv.classList.add("form-row", "member");
+            memberDiv.innerHTML = `
+                <div class="form-group col-md-3 col-sm-12">
+                    <label>Título</label>
+                    <input type="text" name="miembros[${memberCount}][titulo]" class="form-control upper" required>
+                </div>
+                <div class="form-group col-md-3 col-sm-12">
+                    <label>Nombre</label>
+                    <input type="text" name="miembros[${memberCount}][nombre]" class="form-control upper" required>
+                </div>
+                <div class="form-group col-md-2 col-sm-12">
+                    <label>Tipo ID</label>
+                    <select name="miembros[${memberCount}][tipo_id]" class="form-control" required>
+                        <option value="cc">C.C.</option>
+                        <option value="ce">C.E.</option>
+                        <option value="pa">P.A.</option>
+                        <option value="ppt">PPT</option>
+                        <option value="pep">PEP</option>
+                        <option value="nit">NIT</option>
+                        <option value="internacional">INTERNACIONAL</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-2 col-sm-12">
+                    <label>Número ID</label>
+                    <input type="text" name="miembros[${memberCount}][numero_id]" class="form-control" required>
+                </div>
+                <div class="form-group col-md-2 col-sm-12">
+                    <label>¿Favorable?</label>
+                    <select name="miembros[${memberCount}][favorable]" class="form-control favorable-select" required>
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <button type="button" class="btn btn-danger btn-sm removeMemberBtn">Eliminar</button>
+                </div>
+            `;
 
-        addMemberBtn.addEventListener("click", function() {
-            let totalMiembros = contarMiembros();
-            if (totalMiembros  < maxMembers) {
-                memberCount++;
-                let memberDiv = document.createElement("div");
-                memberDiv.classList.add("form-row", "member");
-                memberDiv.setAttribute("data-miembro-id", {{ $solicitud->id }});
-                memberDiv.innerHTML = `
-                    <div class="form-group col-md-3 col-sm-12">
-                        <label>Título</label>
-                        <input type="text" name="miembros[${memberCount}][titulo]" class="form-control" oninput="this.value = this.value.toUpperCase();" required>
-                    </div>
-                    <div class="form-group col-md-3 col-sm-12">
-                        <label>Nombre</label>
-                        <input type="text" name="miembros[${memberCount}][nombre]" class="form-control"  oninput="this.value = this.value.toUpperCase();" required>
-                    </div>
-                    <div class="form-group col-md-2 col-sm-12">
-                        <label>Tipo ID</label>
-                        <select name="miembros[${memberCount}][tipo_id]" class="form-control" required>
-                            <option value="cc">C.C.</option>
-                            <option value="ce">C.E.</option>
-                            <option value="pa">P.A.</option>
-                            <option value="ppt">PPT</option>
-                            <option value="pep">PEP</option>
-                            <option value="nit">NIT</option>
-                            <option value="internacional">INTERNACIONAL</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-2 col-sm-12">
-                        <label>Número ID</label>
-                        <input type="number" name="miembros[${memberCount}][numero_id]"  oninput="this.value = this.value.toUpperCase();" class="form-control" required>
-                    </div>
-                    <div class="form-group col-md-2 col-sm-12">
-                        <label>¿Favorable?</label>
-                        <select name="miembros[${memberCount}][favorable]" class="form-control favorable-select" required>
-                            <option value="si">Sí</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-12">
-                        <button type="button" class="btn btn-danger btn-sm removeMemberBtn">Eliminar</button>
-                    </div>
-                `;
-                membersContainer.appendChild(memberDiv);
-                actualizarEventos();
-                verificarLimiteMiembros();
-            }
-        });
-
-        document.querySelectorAll(".removeMemberBtn").forEach(button => {
-                button.removeEventListener("click", eliminarMiembro);
-                button.addEventListener("click", eliminarMiembro);
-            });
-
-            document.querySelectorAll(".favorable-select").forEach(select => {
-                select.removeEventListener("change", verificarFavorable);
-                select.addEventListener("change", verificarFavorable);
-            });
-
-        function actualizarEventos() {
-            document.querySelectorAll(".removeMemberBtn").forEach(button => {
-                button.removeEventListener("click", eliminarMiembro);
-                button.addEventListener("click", eliminarMiembro);
-            });
-
-            document.querySelectorAll(".favorable-select").forEach(select => {
-                select.removeEventListener("change", verificarFavorable);
-                select.addEventListener("change", verificarFavorable);
-            });
-        }
-        function eliminarMiembro() {
-        let csrfToken = "{{ csrf_token() }}";
-        let memberDiv = this.closest(".member");
-        let miembroId = memberDiv.dataset.miembroId;
-        console.log("Miembro",miembroId );
-        if (miembroId) {
-            fetch(`/admin/analists/deletemember/`+miembroId, {
-                method: "DELETE",
-                headers: {
-                    "X-CSRF-TOKEN": csrfToken,
-                    "Content-Type": "application/json"
-                }
-            }).then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    memberDiv.remove();
-                    verificarLimiteMiembros();
-                    verificarFavorable();
-                } else {
-                    alert("Error al eliminar el miembro.");
-                }
-            });
-        } else {
-            memberDiv.remove();
+            membersContainer.appendChild(memberDiv);
             verificarLimiteMiembros();
-            verificarFavorable();
+            actualizarEventosFavorable();
         }
+    });
+
+    membersContainer.addEventListener("click", function(event) {
+        if (event.target.classList.contains("removeMemberBtn")) {
+            event.target.closest(".member").remove();
+            verificarLimiteMiembros();
+            actualizarEventosFavorable();
+        }
+    });
+
+    function actualizarEventosFavorable() {
+        document.querySelectorAll(".favorable-select").forEach(select => {
+            select.addEventListener("change", function() {
+                let hayNoFavorable = Array.from(document.querySelectorAll(".favorable-select")).some(s => s.value === "no");
+                conceptoContainer.classList.toggle("hidden", !hayNoFavorable);
+            });
+        });
     }
 
-        function verificarFavorable() {
-        let algunNoFavorable = Array.from(document.querySelectorAll(".favorable-select"))
-            .some(select => select.value === "no");
-        if (algunNoFavorable) {
-            document.getElementById("conceptoContainer").classList.remove("hidden");
-        } else {
-            document.getElementById("conceptoContainer").classList.add("hidden");
-        }
-    }
+    actualizarEventosFavorable();
 
-    document.querySelectorAll(".favorable-select").forEach(select => {
-        select.addEventListener("change", verificarFavorable);
+    document.querySelectorAll(".upper").forEach(input => {
+        input.addEventListener("input", function() {
+            this.value = this.value.toUpperCase();
+        });
     });
-    });
+
+    verificarLimiteMiembros();
+});
+
 </script>
 @endsection

@@ -70,6 +70,52 @@ class UserServiceController extends Controller
                 ->with('success', 'Solicitud creada exitosamente')
                 ->with('solicitud_id', $solicitud->id);
     }
+
+    public function update(Request $request)
+{
+    $request->validate([
+        'id'             => 'required|exists:solicitudes,id',
+        'tipo_persona'   => 'required|in:natural,juridica',
+        'fecha_registro' => 'required|date',
+        'razon_social'   => 'required|string|max:255',
+        'tipo_id'        => 'required|string|max:10',
+        'identificador'  => 'required|string|max:50',
+        'motivo'         => 'required|string',
+        'nombre_completo'=> 'nullable|string|max:255',
+        'archivo'        => 'nullable|file|mimes:pdf|max:2048',
+        'tipo_cliente'   => 'nullable|string|in:proveedor,cliente,visitante,contratista',
+    ]);
+
+    // Buscar la solicitud por ID
+    $solicitud = Solicitud::findOrFail($request->id);
+
+    // Manejo del archivo (si se sube uno nuevo, se reemplaza el anterior)
+    if ($request->hasFile('archivo')) {
+        // Eliminar archivo anterior si existe
+        if ($solicitud->archivo) {
+            Storage::disk('public')->delete($solicitud->archivo);
+        }
+        $archivoPath = $request->file('archivo')->store('solicitudes', 'public');
+        $solicitud->archivo = $archivoPath;
+    }
+
+    // Actualizar los demás campos
+    $solicitud->update([
+        'tipo_persona'   => $request->tipo_persona,
+        'fecha_registro' => $request->fecha_registro,
+        'razon_social'   => strtoupper($request->razon_social),
+        'tipo_id'        => $request->tipo_id,
+        'identificador'  => strtoupper($request->identificador),
+        'motivo'         => strtoupper($request->motivo),
+        'nombre_completo'=> strtoupper($request->nombre_completo ?? ''),
+        'tipo_cliente'   => $request->tipo_cliente,
+        'estado'        => 'enviado',
+    ]);
+    return redirect()->route('admin.service.query')
+        ->with('success', 'Solicitud actualizada exitosamente')
+        ->with('solicitud_id', $solicitud->id);
+}
+
     public function queryreq(Request $request ){
         $this->checkAuthorization(auth()->user(), ['admin.create']);
         $request->validate([
@@ -90,6 +136,13 @@ class UserServiceController extends Controller
             'identificador' => $request->identificador
         ]);
 
+    }
+    public function edit(Request $request, $id){
+        $this->checkAuthorization(auth()->user(), ['admin.view']);
+        $solicitud = Solicitud::findOrFail($id);
+        return view('backend.pages.requests.edit', [
+            'solicitud' => $solicitud,
+        ]);
     }
 
 }

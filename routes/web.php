@@ -45,10 +45,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('service/request', [UserServiceController::class, 'request'])->name('service.request');
     Route::get('service/query', [UserServiceController::class, 'query'])->name('service.query');
     Route::post('service/queryreq', [UserServiceController::class, 'queryreq'])->name('service.queryreq');
+    Route::get('service/edit/{id}', [UserServiceController::class, 'edit'])->name('service.edit');
+    Route::post('service/update/', [UserServiceController::class, 'update'])->name('service.update');
 
     Route::get('analists/index', [AnalistsController::class, 'index'])->name('analists.index');
     Route::get('analists/show/{id}', [AnalistsController::class, 'show'])->name('analists.show');
     Route::post('analists/{id}/save', [AnalistsController::class, 'save'])->name('analists.save');
+    Route::post('analists/{id}/savenf', [AnalistsController::class, 'savenf'])->name('analists.savenf');
     Route::delete('analists/deletemember/{id}', [AnalistsController::class, 'eliminarMiembro'])->name('admin.analists.deletemember');
 
     Route::get('approver/index', [ApproverController::class, 'index'])->name('approver.index');

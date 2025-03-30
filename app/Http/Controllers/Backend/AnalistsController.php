@@ -51,26 +51,29 @@ class AnalistsController extends Controller
 
         $actualizarSolicitud = false;
         $motivoRechazo = null;
-        $estado = 'enviado';
+        $estado = 'aprobador';
 
-        Miembro::where('solicitud_id', $id)->delete();
-        foreach ($request->miembros as $miembroData) {
-            Miembro::create([
-                'solicitud_id' => $id,
-                'titulo' => $miembroData['titulo'],
-                'nombre' => $miembroData['nombre'],
-                'tipo_id' => $miembroData['tipo_id'],
-                'numero_id' => $miembroData['numero_id'],
-                'favorable' => $miembroData['favorable'],
-                'concepto_no_favorable' => $request->concepto_no_favorable
-            ]);
-        }
-        if ($miembroData['favorable'] === "no") {
-            $actualizarSolicitud = true;
-            $motivoRechazo = $request->concepto_no_favorable ?? "No especificado";
-            $estado = 'documentacion';
-        }else{
-            $estado = 'aprobador';
+        if (!empty($request->miembros) && is_array($request->miembros)) {
+            Miembro::where('solicitud_id', $id)->delete();
+            foreach ($request->miembros as $miembroData) {
+                Miembro::create([
+                    'solicitud_id' => $id,
+                    'titulo' => $miembroData['titulo'],
+                    'nombre' => $miembroData['nombre'],
+                    'tipo_id' => $miembroData['tipo_id'],
+                    'numero_id' => $miembroData['numero_id'],
+                    'favorable' => $miembroData['favorable'],
+                    'concepto_no_favorable' => $request->concepto_no_favorable
+                ]);
+            }
+
+            if ($miembroData['favorable'] === "no") {
+                $actualizarSolicitud = true;
+                $motivoRechazo = $request->concepto_no_favorable ?? "No especificado";
+                $estado = 'documentacion';
+            }else{
+                $estado = 'aprobador';
+            }
         }
         if ($actualizarSolicitud) {
             Solicitud::where('id', $id)->update([
@@ -83,6 +86,20 @@ class AnalistsController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Miembros agregados correctamente.');
+        return redirect()->back()->with('success', 'Solicitud procesada correctamente.');
+    }
+    public function savenf(Request $request, $id){
+
+            $actualizarSolicitud = true;
+            $motivoRechazo = $request->concepto_no_favorable;
+            $razonDocumentacion = $request->razon_documentacion ;
+            $numeroSolicitud = $request->numero_solicitud ;
+
+            Solicitud::where('id', $id)->update([
+                'motivo' => $motivoRechazo,
+                'estado' => $razonDocumentacion
+            ]);
+
+        return redirect()->back()->with('success', 'Solicitud actualizada correctamente.');
     }
 }

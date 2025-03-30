@@ -46,23 +46,24 @@ class ApproverController extends Controller
         $actualizarSolicitud = false;
         $motivoRechazo = null;
         $estado = 'documentacion';
-
-        Miembro::where('solicitud_id', $id)->delete();
-        foreach ($request->miembros as $miembroData) {
-            Miembro::create([
-                'solicitud_id' => $id,
-                'titulo' => $miembroData['titulo'],
-                'nombre' => $miembroData['nombre'],
-                'tipo_id' => $miembroData['tipo_id'],
-                'numero_id' => $miembroData['numero_id'],
-                'favorable' => $miembroData['favorable'],
-                'concepto_no_favorable' => $request->concepto_no_favorable
-            ]);
-        }
-        if ($miembroData['favorable'] === "no") {
-            $actualizarSolicitud = true;
-            $motivoRechazo = $request->concepto_no_favorable ?? "No especificado";
-            $estado = 'documentacion';
+        if (!empty($request->miembros) && is_array($request->miembros)) {
+            Miembro::where('solicitud_id', $id)->delete();
+            foreach ($request->miembros as $miembroData) {
+                Miembro::create([
+                    'solicitud_id' => $id,
+                    'titulo' => $miembroData['titulo'],
+                    'nombre' => $miembroData['nombre'],
+                    'tipo_id' => $miembroData['tipo_id'],
+                    'numero_id' => $miembroData['numero_id'],
+                    'favorable' => $miembroData['favorable'],
+                    'concepto_no_favorable' => $request->concepto_no_favorable
+                ]);
+            }
+            if ($miembroData['favorable'] === "no") {
+                $actualizarSolicitud = true;
+                $motivoRechazo = $request->concepto_no_favorable ?? "No especificado";
+                $estado = 'documentacion';
+            }
         }
         if($vista == 1 && $actualizarSolicitud == false){
             $estado= 'aprobador2';

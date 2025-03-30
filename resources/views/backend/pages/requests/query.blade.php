@@ -27,6 +27,12 @@
                     @include('backend.layouts.partials.messages')
                     <form action="{{ route('admin.service.queryreq') }}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @include('backend.layouts.partials.messages')
+                        @if (session('solicitud_id'))
+                            <div class="alert alert-info">
+                                ID de la solicitud creada: <h1></h1><strong>{!! session('solicitud_id') !!}</strong></h1>
+                            </div>
+                        @endif
                         <div class="form-row">
                                 <div class="form-group  col-md-6 col-sm-12">
                                     <label>Numero Solicitud</label>
@@ -51,6 +57,9 @@
                                         <tr>
                                             <th>ID Solicitud</th>
                                             <th>Razón Social</th>
+                                            <th>Tipo ID</th>
+                                            <th>Identificador</th>
+                                            <th>Fecha registro</th>
                                             <th>Motivo</th>
                                             <th>Estado</th>
                                         </tr>
@@ -58,10 +67,21 @@
                                     <tbody>
                                         @foreach($solicitud as $solicitu)
                                             <tr>
-                                                <td>{{ $solicitu->id }}</td>
-                                                <td>{{ $solicitu->razon_social }}</td>
-                                                <td>{{ $solicitu->motivo }}</td>
-                                                <td>{{ $solicitu->estado }}</td>
+                                                <td>{{ strtoupper($solicitu->id) }}</td>
+                                                <td>{{ strtoupper($solicitu->razon_social) }}</td>
+                                                <td>{{ strtoupper($solicitu->tipo_id) }}</td>
+                                                <td>{{ strtoupper($solicitu->identificador) }}</td>
+                                                <td>{{ strtoupper($solicitu->fecha_registro) }}</td>
+                                                <td>{{ strtoupper($solicitu->motivo) }}</td>
+                                                <td>{{ strtoupper($solicitu->estado) }}</td>
+                                                <td> @if (auth()->user()->can('admin.edit') && $solicitu->estado == 'documentacion')
+                                                    <a class="btn btn-success text-white" href="{{ route('admin.service.edit', $solicitu->id) }}">Edit</a>
+                                                @endif
+                                                </td>
+                                                <td> @if (auth()->user()->can('admin.edit') && $solicitu->estado == 'revisado')
+                                                    <a class="btn btn-success text-white" href="{{ route('admin.service.edit', $solicitu->id) }}">Descargar</a>
+                                                @endif
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>

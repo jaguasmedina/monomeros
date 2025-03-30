@@ -20,7 +20,8 @@ class Solicitud extends Model
         'motivo',
         'nombre_completo',
         'archivo',
-        'tipo_cliente'
+        'tipo_cliente',
+        'estado',
     ];
     public function miembros()
     {
