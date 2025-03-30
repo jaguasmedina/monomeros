@@ -77,11 +77,11 @@
                                                 <td> @if (auth()->user()->can('admin.edit') && $solicitu->estado == 'documentacion')
                                                     <a class="btn btn-success text-white" href="{{ route('admin.service.edit', $solicitu->id) }}">Edit</a>
                                                 @endif
-                                                </td>
-                                                <td> @if (auth()->user()->can('admin.edit') && $solicitu->estado == 'revisado')
-                                                    <a class="btn btn-success text-white" href="{{ route('admin.service.edit', $solicitu->id) }}">Descargar</a>
+                                                @if (auth()->user()->can('admin.edit') && $solicitu->estado == 'revisado')
+                                                    <a class="btn btn-success text-white" href="{{ route('admin.service.descargar.pdf', $solicitu->id) }}">Descargar</a>
                                                 @endif
                                                 </td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>

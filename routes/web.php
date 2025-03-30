@@ -13,6 +13,7 @@ use App\Http\Controllers\Backend\InformationController;
 use App\Http\Controllers\Backend\UserServiceController;
 use App\Http\Controllers\Backend\AnalistsController;
 use App\Http\Controllers\Backend\ApproverController;
+use App\Http\Controllers\Backend\PdfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::post('service/queryreq', [UserServiceController::class, 'queryreq'])->name('service.queryreq');
     Route::get('service/edit/{id}', [UserServiceController::class, 'edit'])->name('service.edit');
     Route::post('service/update/', [UserServiceController::class, 'update'])->name('service.update');
+    Route::get('service/descargarpdf/{id}', [PdfController::class, 'generarPDF'])->name('service.descargar.pdf');
+
 
     Route::get('analists/index', [AnalistsController::class, 'index'])->name('analists.index');
     Route::get('analists/show/{id}', [AnalistsController::class, 'show'])->name('analists.show');
