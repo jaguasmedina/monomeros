@@ -2832,3 +2832,14 @@ table.dataTable thead td {
 }
 
 /*-------------------- END Offset Sidebar ------------------- */
+
+/*-------------------- Efecto Zebra ------------------- */
+
+table tr:nth-child(odd) {
+    background-color: #ffffff; /* Blanco */
+}
+
+
+table tr:nth-child(even) {
+    background-color: #555555; /* oscuro medio */
+}

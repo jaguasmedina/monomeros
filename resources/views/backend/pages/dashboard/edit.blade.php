@@ -74,8 +74,11 @@ Editar usuario - panel administrador
                                 <input type="text" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" id="cargo" name="cargo" placeholder="Cargo" value="{{ $usuario->cargo }}" required>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="email">Estado</label>
-                                <input type="text" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" id="estado" name="estado" placeholder="Estado" value="{{ $usuario->estado }}" required>
+                                <label for="estado">Concepto</label>
+                                <select id="estado" name="estado" class="form-control" required>
+                                    <option value="FAVORABLE" {{ $usuario->estado == 'FAVORABLE' ? 'selected' : '' }}>FAVORABLE</option>
+                                    <option value="NO FAVORABLE" {{ $usuario->estado == 'NO FAVORABLE' ? 'selected' : '' }}>NO FAVORABLE</option>
+                                </select>
                             </div>
                         </div>
 

@@ -11,14 +11,10 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Spatie\Activitylog\Models\Activity;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
 class RolesController extends Controller
 {
-    use LogsActivity;
-
     public function index(): Renderable
     {
         $this->checkAuthorization(auth()->user(), ['role.view']);
@@ -42,16 +38,19 @@ class RolesController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['role.create']);
 
-        // Process Data.
+        // Crear el rol con el guard "admin"
         $role = Role::create(['name' => $request->name, 'guard_name' => 'admin']);
 
-        // $role = DB::table('roles')->where('name', $request->name)->first();
         $permissions = $request->input('permissions');
-
         if (!empty($permissions)) {
             $role->syncPermissions($permissions);
         }
-        activity('roles')->causedBy(auth()->user())->withProperties(['role' => $role->name])->log('Rol Creado.');
+        // Registrar la actividad asignando el rol creado como subject
+        activity('roles')
+            ->causedBy(auth()->user())
+            ->performedOn($role)
+            ->withProperties(['role' => $role->name])
+            ->log('Rol Creado.');
         session()->flash('success', 'Role has been created.');
         return redirect()->route('admin.roles.index');
     }
@@ -84,12 +83,18 @@ class RolesController extends Controller
         }
 
         $permissions = $request->input('permissions');
+        // Actualizamos el nombre y sincronizamos permisos
+        $role->name = $request->name;
+        $role->save();
         if (!empty($permissions)) {
-            $role->name = $request->name;
-            $role->save();
             $role->syncPermissions($permissions);
         }
-        activity('roles')->causedBy(auth()->user())->withProperties(['role' => $role->name])->log('Actualizo el rol.');
+        // Registrar actividad con performedOn($role)
+        activity('roles')
+            ->causedBy(auth()->user())
+            ->performedOn($role)
+            ->withProperties(['role' => $role->name])
+            ->log('Actualizo el rol.');
         session()->flash('success', 'Role has been updated.');
         return back();
     }
@@ -104,16 +109,22 @@ class RolesController extends Controller
             return back();
         }
 
+        // Registrar actividad antes de eliminar
+        activity('roles')
+            ->causedBy(auth()->user())
+            ->performedOn($role)
+            ->withProperties(['role' => $role->name])
+            ->log('Rol Eliminado.');
         $role->delete();
-        activity('roles')->causedBy(auth()->user())->withProperties(['role' => $role->name])->log('Rol Eliminado.');
         session()->flash('success', 'Role has been deleted.');
         return redirect()->route('admin.roles.index');
     }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly(['name', 'guard_name'])
-            ->useLogName('roles')
+            ->useLog('roles')
             ->setDescriptionForEvent(fn(string $eventName) => "Se ha realizado la acción: {$eventName} en un rol")
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();

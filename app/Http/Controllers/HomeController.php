@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -17,9 +18,15 @@ class HomeController extends Controller
     }
 
     public function redirectAdmin()
-    {
-        return redirect()->route('admin.dashboard');
+{
+    $user = Auth::guard('admin')->user();
+    if ($user->hasRole('usuarios')) {
+        return redirect()->route('admin.service.request');
     }
+    // Para los demás roles: redirige al dashboard
+    return redirect()->route('admin.dashboard');
+}
+
 
     /**
      * Show the application dashboard.

@@ -2,15 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Solicitud extends Model
 {
-    use HasFactory;
-
     protected $table = 'solicitudes';
-
     protected $fillable = [
         'tipo_persona',
         'fecha_registro',
@@ -22,9 +19,27 @@ class Solicitud extends Model
         'archivo',
         'tipo_cliente',
         'estado',
+        'admin_id'
     ];
-    public function miembros()
+
+    protected $casts = [
+        'fecha_registro' => 'date',
+        'archivo' => 'array'
+    ];
+
+    public function admin(): BelongsTo
     {
-        return $this->hasMany(Miembro::class, 'solicitud_id');
+        return $this->belongsTo(\App\Models\Admin::class, 'admin_id');
     }
+
+    public function getArchivosAttribute()
+    {
+        return $this->archivo ? json_decode($this->archivo) : [];
+    }
+
+    public function miembros()
+{
+    return $this->hasMany(\App\Models\Miembro::class);
+}
+
 }

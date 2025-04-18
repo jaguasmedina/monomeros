@@ -44,7 +44,9 @@
                         <div class="form-row">
                                 <div class="form-group col-md-6 col-sm-12">
                                     <label>Fecha</label>
-                                    <input type="date" name="fecha_registro" class="form-control" id="fecha_registro" value="{{ $solicitud->fecha_registro }}" required>
+                                    <input type="date" name="fecha_registro" class="form-control" id="fecha_registro" 
+       value="{{ old('fecha_registro', $solicitud->fecha_registro) }}" 
+       required max="{{ date('Y-m-d') }}">
                                 </div>
                                 <div class="form-group  col-md-6 col-sm-12">
                                     <label>Razón Social</label>
@@ -97,7 +99,7 @@
                                     </div>
 
                                 <div class="form-group  col-md-6 col-sm-12">
-                                    <label>Tipo de Visitante</label>
+                                    <label>Tipo</label>
                                     <select name="tipo_cliente" id="tipo_cliente" class="form-control select2">
                                         <option value="contratista" @selected($solicitud->tipo_cliente == 'contratista')>Contratista</option>
                                         <option value="visitante" @selected($solicitud->tipo_cliente == 'visitante')>Visitante</option>

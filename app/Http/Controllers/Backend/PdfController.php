@@ -37,7 +37,7 @@ class PdfController extends Controller
         $templateProcessor->setValue('{ANO}', date('Y'));
         $templateProcessor->setValue('{IDENTIFICADOR}', $usuario->tipo_id." ".$usuario->identificador);
         $templateProcessor->setValue('{ID}', $id);
-        $templateProcessor->setValue('{CONCEPTO}', $usuario->estado == 'revisado' ? 'FAVORABLE' : 'NO FAVORABLE');
+        $templateProcessor->setValue('{CONCEPTO}', $usuario->estado == 'entregado' ? 'FAVORABLE' : 'NO FAVORABLE');
 
         // Guardar archivo temporalmente
         $tempWordFile = storage_path('app/public/documento_generado.docx');

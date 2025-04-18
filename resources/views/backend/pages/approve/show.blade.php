@@ -23,7 +23,7 @@
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="header-title">Consultar Solicitud</h4>
+                    <h4 class="header-title">Solicitud</h4>
                     @include('backend.layouts.partials.messages')
                     <form action="{{ route('admin.approver.save', ['id' => $solicitud->id, 'vista' => request('vista')]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -50,7 +50,7 @@
                             <div class="form-row">
                                 <div class="form-group  col-md-8 col-sm-12">
                                     <label>Motivo</label>
-                                    <textarea name="motivo" readonly required  class="form-control" placeholder="Motivo" value="{{ $solicitud->motivo }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();"></textarea>
+                                    <textarea name="motivo" readonly required  class="form-control" placeholder="Motivo" value="{{ $solicitud->motivo }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">{{ $solicitud->motivo }}</textarea>
                                 </div>
                                 <div class="form-group col-md-4 col-sm-12">
                                     <label>Descargar Documento</label>
