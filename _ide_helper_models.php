@@ -54,6 +54,37 @@ namespace App\Models{
 /**
  * 
  *
+ * @property string $identificador
+ * @property string $tipo
+ * @property string $nombre_completo
+ * @property string $empresa
+ * @property string $fecha_registro
+ * @property string $fecha_vigencia
+ * @property string $cargo
+ * @property string $estado
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereCargo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereEmpresa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereEstado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereFechaRegistro($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereFechaVigencia($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereIdentificador($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereNombreCompleto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereTipo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Information whereUpdatedAt($value)
+ */
+	class Information extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
  * @property int $id
  * @property int $solicitud_id
  * @property string $titulo
@@ -161,37 +192,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Solicitud whereUpdatedAt($value)
  */
 	class Solicitud extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * 
- *
- * @property string $identificador
- * @property string $tipo
- * @property string $nombre_completo
- * @property string $empresa
- * @property string $fecha_registro
- * @property string $fecha_vigencia
- * @property string $cargo
- * @property string $estado
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereCargo($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereEmpresa($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereEstado($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereFechaRegistro($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereFechaVigencia($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereIdentificador($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereNombreCompleto($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereTipo($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|information whereUpdatedAt($value)
- */
-	class information extends \Eloquent {}
 }
 
 namespace App{

@@ -15,20 +15,18 @@ class DashboardController extends Controller
     {
         $user = Auth::guard('admin')->user();
 
-        // Redirigir a crear solicitud si rol = usuarios
+        // Si el rol es "usuarios", redirige directamente a crear solicitud
         if ($user->hasRole('usuarios')) {
             return redirect()->route('admin.service.request');
         }
 
-        // Autorización normal
+        // Verifica permiso para ver el dashboard
         $this->checkAuthorization($user, ['dashboard.view']);
 
-        return view(
-            'backend.pages.dashboard.index',
-            [
-                'admins'       => Admin::all(),
-                'informations' => Information::all(),
-            ]
-        );
+        // Carga la vista con los datos
+        return view('backend.pages.dashboard.index', [
+            'admins'       => Admin::all(),
+            'informations' => Information::all(),
+        ]);
     }
 }
