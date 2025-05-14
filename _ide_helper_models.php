@@ -92,6 +92,7 @@ namespace App\Models{
  * @property string $tipo_id
  * @property string $numero_id
  * @property string $favorable
+ * @property string|null $observaciones
  * @property string|null $concepto_no_favorable
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -105,6 +106,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Miembro whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Miembro whereNombre($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Miembro whereNumeroId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Miembro whereObservaciones($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Miembro whereSolicitudId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Miembro whereTipoId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Miembro whereTitulo($value)

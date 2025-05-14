@@ -25,118 +25,104 @@
                 <div class="card-body">
                     <h4 class="header-title">Consultar Solicitud</h4>
                     @include('backend.layouts.partials.messages')
-                    <form id="solicitudForm" action="{{ route('admin.analists.save', $solicitud->id) }}" method="POST" enctype="multipart/form-data">
+                    <form id="solicitudForm" action="{{ route('admin.analists.save', $solicitud->id) }}" method="POST">
                         @csrf
                         <div class="form-row">
-                                <div class="form-group  col-md-6 col-sm-12">
-                                    <label>Numero Solicitud</label>
-                                    <input type="text" readonly name="numero_solicitud" class="form-control" placeholder="Numero Solicitud" value="{{ $solicitud->id }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
-                                </div>
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Fecha</label>
-                                    <input type="date" readonly name="fecha_registro" class="form-control" id="fecha_registro" placeholder="Fecha Registro" value="{{ $solicitud->fecha_registro }}">
-                                </div>
+                            <div class="form-group col-md-6">
+                                <label>Número Solicitud</label>
+                                <input type="text" readonly name="numero_solicitud" value="{{ $solicitud->id }}" class="form-control">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Fecha</label>
+                                <input type="date" readonly name="fecha_registro" value="{{ $solicitud->fecha_registro }}" class="form-control">
+                            </div>
                         </div>
-                            <div class="form-row">
-                                <div class="form-group  col-md-6 col-sm-12">
-                                    <label>Razón Social</label>
-                                    <input type="text" readonly name="identificador" placeholder="Identificador" value="{{ $solicitud->razon_social }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" maxlength="50">
-                                </div>
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Identificación</label>
-                                    <input type="text" readonly class="form-control" placeholder="Nombre Completo" value="{{ $solicitud->tipo_id  }}  {{ $solicitud->identificador }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Razón Social</label>
+                                <input type="text" readonly value="{{ $solicitud->razon_social }}" class="form-control">
                             </div>
-                            <div class="form-row">
-                                <div class="form-group  col-md-8 col-sm-12">
-                                    <label>Motivo</label>
-                                    <textarea name="motivo" readonly required  class="form-control" placeholder="Motivo" value="{{ $solicitud->motivo }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">{{ $solicitud->motivo }}</textarea>
-                                </div>
-                                <div class="form-group col-md-4 col-sm-12">
-                                    <label>Descargar Documento</label>
-                                    @if($solicitud->archivo)
-                                        <a href="{{ asset('storage/' . $solicitud->archivo) }}" class="btn btn-success" target="_blank">
-                                            <i class="fa fa-download"></i> Descargar PDF
-                                        </a>
-                                    @else
-                                        <p>No hay documento adjunto</p>
-                                    @endif
-                                </div>
+                            <div class="form-group col-md-6">
+                                <label>Identificación</label>
+                                <input type="text" readonly value="{{ $solicitud->tipo_id }} {{ $solicitud->identificador }}" class="form-control">
                             </div>
-                            <div class="form-row">
-                                <div class="col-12">
-                                    <button type="button" id="addMemberBtn" class="btn btn-primary btn-sm">Agregar Miembro</button>
-                                </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                <label>Motivo</label>
+                                <textarea readonly class="form-control">{{ $solicitud->motivo }}</textarea>
                             </div>
-                            <div id="membersContainer">
-                                @foreach ($solicitud->miembros as $index => $miembro)
-                                    <div class="form-row member" data-miembro-id= {{ $miembro->id }}>
-                                        <div class="form-group col-md-3 col-sm-12">
-                                            <label>Título</label>
-                                            <input type="text" name="miembros[{{ $index }}][titulo]" class="form-control" value="{{ $miembro->titulo }}" required>
-                                        </div>
-                                        <div class="form-group col-md-3 col-sm-12">
-                                            <label>Nombre</label>
-                                            <input type="text" name="miembros[{{ $index }}][nombre]" class="form-control" value="{{ $miembro->nombre }}" required>
-                                        </div>
-                                        <div class="form-group col-md-2 col-sm-12">
-                                            <label>Tipo ID</label>
-                                            <select name="miembros[{{ $index }}][tipo_id]" class="form-control" required>
-                                                <option value="cc" {{ $miembro->tipo_id == 'cc' ? 'selected' : '' }}>C.C.</option>
-                                                <option value="ce" {{ $miembro->tipo_id == 'ce' ? 'selected' : '' }}>C.E.</option>
-                                                <option value="pa" {{ $miembro->tipo_id == 'pa' ? 'selected' : '' }}>P.A.</option>
-                                                <option value="ppt" {{ $miembro->tipo_id == 'ppt' ? 'selected' : '' }}>PPT</option>
-                                                <option value="pep" {{ $miembro->tipo_id == 'pep' ? 'selected' : '' }}>PEP</option>
-                                                <option value="nit" {{ $miembro->tipo_id == 'nit' ? 'selected' : '' }}>NIT</option>
-                                                <option value="internacional" {{ $miembro->tipo_id == 'internacional' ? 'selected' : '' }}>INTERNACIONAL</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-2 col-sm-12">
-                                            <label>Número ID</label>
-                                            <input type="text" name="miembros[{{ $index }}][numero_id]" class="form-control" value="{{ $miembro->numero_id }}" required>
-                                        </div>
-                                        <div class="form-group col-md-2 col-sm-12">
-                                            <label>¿Favorable?</label>
-                                            <select name="miembros[{{ $index }}][favorable]" class="form-control favorable-select" required>
-                                                <option value="si" {{ $miembro->favorable == 'si' ? 'selected' : '' }}>Sí</option>
-                                                <option value="no" {{ $miembro->favorable == 'no' ? 'selected' : '' }}>No</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-12">
-                                            <button type="button" class="btn btn-danger btn-sm removeMemberBtn">Eliminar</button>
-                                        </div>
+                            <div class="form-group col-md-4">
+                                <label>Descargar Documento</label><br>
+                                @if($solicitud->archivo)
+                                    <a href="{{ asset('storage/'.$solicitud->archivo) }}" class="btn btn-success" target="_blank">
+                                        <i class="fa fa-download"></i> Descargar PDF
+                                    </a>
+                                @else
+                                    <p>No hay documento adjunto</p>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="form-row mb-3">
+                            <div class="col-12">
+                                <button type="button" id="addMemberBtn" class="btn btn-primary btn-sm">Agregar Miembro</button>
+                            </div>
+                        </div>
+                        <div id="membersContainer">
+                            @foreach($solicitud->miembros as $index => $miembro)
+                                <div class="form-row member" data-miembro-id="{{ $miembro->id }}">
+                                    <div class="form-group col-md-3">
+                                        <label>Título</label>
+                                        <input type="text" name="miembros[{{ $index }}][titulo]" value="{{ $miembro->titulo }}" class="form-control" required>
                                     </div>
-                                @endforeach
-                            </div>
-                            <div id="conceptoContainer" class="form-group col-md-12 col-sm-12 {{ $solicitud->miembros->where('favorable', 'no')->count() ? '' : 'hidden' }}">
-                                <label>Concepto de No Favorable</label>
-                                <textarea name="concepto_no_favorable" id="concepto_no_favorable" class="form-control" placeholder="Explique el motivo">{{ $solicitud->miembros->where('favorable', 'no')->first()?->concepto_no_favorable ?? '' }}</textarea>
-                            </div>
-                            <br>
+                                    <div class="form-group col-md-3">
+                                        <label>Nombre</label>
+                                        <input type="text" name="miembros[{{ $index }}][nombre]" value="{{ $miembro->nombre }}" class="form-control" required>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label>Tipo ID</label>
+                                        <select name="miembros[{{ $index }}][tipo_id]" class="form-control" required>
+                                            <option value="cc" {{ $miembro->tipo_id=='cc'?'selected':'' }}>C.C.</option>
+                                            <option value="ce" {{ $miembro->tipo_id=='ce'?'selected':'' }}>C.E.</option>
+                                            <option value="pa" {{ $miembro->tipo_id=='pa'?'selected':'' }}>P.A.</option>
+                                            <option value="ppt" {{ $miembro->tipo_id=='ppt'?'selected':'' }}>PPT</option>
+                                            <option value="pep" {{ $miembro->tipo_id=='pep'?'selected':'' }}>PEP</option>
+                                            <option value="ti" {{ $miembro->tipo_id=='ti'?'selected':'' }}>TI</option>
+                                            <option value="rc" {{ $miembro->tipo_id=='rc'?'selected':'' }}>RC</option>
+                                            <option value="nit" {{ $miembro->tipo_id=='nit'?'selected':'' }}>NIT</option>
+                                            <option value="internacional" {{ $miembro->tipo_id=='internacional'?'selected':'' }}>INTERNACIONAL</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label>Número ID</label>
+                                        <input type="text" name="miembros[{{ $index }}][numero_id]" value="{{ $miembro->numero_id }}" class="form-control" required>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label>¿Favorable?</label>
+                                        <select name="miembros[{{ $index }}][favorable]" class="form-control favorable-select" required>
+                                            <option value="si" {{ $miembro->favorable=='si'?'selected':'' }}>Sí</option>
+                                            <option value="no" {{ $miembro->favorable=='no'?'selected':'' }}>No</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Observaciones</label>
+                                        <textarea name="miembros[{{ $index }}][observaciones]" class="form-control">{{ $miembro->observaciones ?? '' }}</textarea>
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <button type="button" class="btn btn-danger btn-sm removeMemberBtn">Eliminar</button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div id="conceptoContainer" class="form-group col-md-12 {{ $solicitud->miembros->contains(fn($m)=>$m->favorable=='no')?'':'hidden' }}">
+                            <label>Concepto de No Favorable</label>
+                            <textarea name="concepto_no_favorable" class="form-control">{{ $solicitud->miembros->where('favorable','no')->first()?->concepto_no_favorable }}</textarea>
+                        </div>
 
                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        <a href="#" onclick="showDevuelto(1)" class="btn btn-secondary">Devolver</a>
                         <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
                     </form>
-                    <form id="devueltoForm" class="hidden" action="{{ route('admin.analists.savenf', $solicitud->id) }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="form-group  col-md-6 col-sm-12">
-                            <label>Numero Solicitud</label>
-                            <input type="text" readonly name="numero_solicitud" class="form-control" placeholder="Numero Solicitud" value="{{ $solicitud->id }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
-                        </div>
-                        <div id="conceptoContainer" class="form-group col-md-12 col-sm-12">
-                            <label>Concepto de Devolución</label>
-                            <textarea name="concepto_no_favorable" id="concepto_no_favorable" class="form-control" placeholder="Explique el motivo">{{ $solicitud->miembros->where('favorable', 'no')->first()?->concepto_no_favorable ?? '' }}</textarea>
-                        </div>
-                        <div class="form-group col-md-2 col-sm-12">
-                            <label>Razón de devolución.</label>
-                            <select name="razon_documentacion" id="razon_documentacion" class="form-control favorable-select" required>
-                                <option value="documentacion">Documentación</option>
-                                <option value="entregado">Otro</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-success">Guardar</button>
-                        <a href="#" onclick="showDevuelto(2)" class="btn btn-secondary">Regresar</a>
                 </div>
             </div>
         </div>
@@ -186,6 +172,8 @@
             <option value="pa">P.A.</option>
             <option value="ppt">PPT</option>
             <option value="pep">PEP</option>
+            <option value="ti">TI</option>
+            <option value="rc">RC</option>
         `;
 
         const opcionesJuridica = `
@@ -250,6 +238,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         <option value="pa">P.A.</option>
                         <option value="ppt">PPT</option>
                         <option value="pep">PEP</option>
+                        <option value="ti">TI</option>
+                        <option value="rc">RC</option>
                         <option value="nit">NIT</option>
                         <option value="internacional">INTERNACIONAL</option>
                     </select>
@@ -265,6 +255,12 @@ document.addEventListener("DOMContentLoaded", function() {
                         <option value="no">No</option>
                     </select>
                 </div>
+                
+                <div class="form-group col-md-4">
+                <label>Observaciones</label>
+                <textarea name="miembros[${memberCount}][observaciones]" class="form-control upper"></textarea>
+                </div>
+
                 <div class="form-group col-md-12">
                     <button type="button" class="btn btn-danger btn-sm removeMemberBtn">Eliminar</button>
                 </div>

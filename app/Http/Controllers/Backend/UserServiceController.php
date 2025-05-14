@@ -9,14 +9,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Solicitud;
+use Carbon\Carbon;
+use DB;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
-use App\Models\Solicitud;
-use App\Models\Miembro;
-use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Validator;
+// Added for report/export
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SolicitudesExport;
 
@@ -49,19 +50,26 @@ class UserServiceController extends Controller
             ->dontSubmitEmptyLogs();
     }
 
-    // Muestra la vista para crear una nueva solicitud
+    // 1) Mostrar formulario de nueva solicitud
     public function request(): Renderable
     {
         $this->authorize('admin.view');
         return view('backend.pages.requests.request');
     }
 
-    // Método report: genera el reporte de solicitudes filtrado
+   
+        /**
+     * 2) Mostrar reporte de Solicitudes con filtro por estado real
+     */
     public function report(Request $request): Renderable
     {
-        $filters = $request->only(['fecha_inicio', 'fecha_fin', 'razon_social', 'estado']);
-        $query = Solicitud::query();
+        $this->authorize('admin.view');
 
+        // 1) Recogemos filtros anteriores
+        $filters = $request->only(['fecha_inicio', 'fecha_fin', 'razon_social', 'estado']);
+
+        // 2) Construimos la consulta aplicando los filtros
+        $query = Solicitud::query();
         if (!empty($filters['fecha_inicio'])) {
             $query->where('fecha_registro', '>=', $filters['fecha_inicio']);
         }
@@ -74,20 +82,35 @@ class UserServiceController extends Controller
         if (!empty($filters['estado'])) {
             $query->where('estado', $filters['estado']);
         }
-
         $solicitudes = $query->get();
 
-        return view('backend.pages.reports.solicitudes', compact('solicitudes', 'filters'));
+        // 3) Sacamos lista de todos los estados existentes para el dropdown
+        $estados = Solicitud::select('estado')
+                            ->distinct()
+                            ->orderBy('estado')
+                            ->pluck('estado');
+
+        // 4) Devolvemos la vista con las variables
+        return view('backend.pages.reports.solicitudes', compact(
+            'solicitudes',
+            'filters',
+            'estados'
+        ));
     }
 
-    // Exporta el reporte de solicitudes a Excel
+
+    /**
+     * 3) Exportar reporte de Solicitudes a Excel
+     */
     public function exportReport(Request $request)
     {
+        $this->authorize('admin.view');
+
         $filters = $request->only(['fecha_inicio', 'fecha_fin', 'razon_social', 'estado']);
         return Excel::download(new SolicitudesExport($filters), 'solicitudes.xlsx');
     }
 
-    // Procesa la consulta de solicitudes (vista Query)
+    // 4) Procesar consulta de solicitudes (Query)
     public function handleQuery(Request $request): Renderable
     {
         $this->authorize('admin.view');
@@ -98,11 +121,11 @@ class UserServiceController extends Controller
                 'identificador'    => 'nullable|string|max:50',
             ]);
 
-            $solicitud = Solicitud::when($request->numero_solicitud, function ($query, $numero_solicitud) {
-                    return $query->where('id', $numero_solicitud);
+            $solicitud = Solicitud::when($request->numero_solicitud, function ($query, $numero) {
+                    return $query->where('id', $numero);
                 })
-                ->when($request->identificador, function ($query, $identificador) {
-                    return $query->where('identificador', strtoupper($identificador));
+                ->when($request->identificador, function ($query, $id) {
+                    return $query->where('identificador', strtoupper($id));
                 })
                 ->get();
 
@@ -120,7 +143,7 @@ class UserServiceController extends Controller
         ]);
     }
 
-    // Procesa la creación de una nueva solicitud
+    // 5) Almacenar nueva solicitud
     public function store(Request $request): RedirectResponse
     {
         $validator = Validator::make($request->all(), [
@@ -131,15 +154,13 @@ class UserServiceController extends Controller
             'identificador'   => 'required|string|max:50',
             'motivo'          => 'required|string',
             'nombre_completo' => $request->tipo_persona === 'natural' ? 'required|string|max:255' : 'nullable',
-            'archivos'        => $request->tipo_persona === 'juridica' ? 'required|array|min:1|max:3' : 'nullable',
+            'archivos'        => $request->tipo_persona === 'juridica' ? 'required|array|min:1|max:10' : 'nullable',
             'archivos.*'      => 'file|mimes:pdf|max:2048',
             'tipo_cliente'    => 'required|string',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $archivosPaths = [];
@@ -169,7 +190,7 @@ class UserServiceController extends Controller
             ->with('solicitud_id', $solicitud->id);
     }
 
-    // Muestra el formulario de edición de una solicitud
+    // 6) Mostrar formulario de edición
     public function edit($id): Renderable
     {
         $this->authorize('admin.edit');
@@ -177,28 +198,7 @@ class UserServiceController extends Controller
         return view('backend.pages.requests.edit', compact('solicitud'));
     }
 
-    // Muestra las solicitudes creadas por el usuario autenticado (rol "usuarios")
-    public function misSolicitudes(Request $request): Renderable
-    {
-        $adminId = Auth::guard('admin')->id();
-
-        $solicitudes = Solicitud::where('admin_id', $adminId)
-            ->with(['admin' => function($query) {
-                $query->select('id', 'name');
-            }])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        Log::debug('Solicitudes del usuario', [
-            'admin_id' => $adminId,
-            'count' => $solicitudes->count(),
-            'solicitudes' => $solicitudes->pluck('id')
-        ]);
-
-        return view('backend.pages.solicitudes.mis_solicitudes', compact('solicitudes'));
-    }
-
-    // Actualiza una solicitud (en el flujo de edición)
+    // 7) Guardar edición
     public function update(Request $request): RedirectResponse
     {
         $this->authorize('admin.edit');
@@ -242,68 +242,79 @@ class UserServiceController extends Controller
             ->with('solicitud_id', $solicitud->id);
     }
 
-    // Genera el documento PDF final de la solicitud
+    // 8) “Mis Solicitudes” (rol usuarios)
+    public function misSolicitudes(Request $request): Renderable
+    {
+        $adminId = Auth::guard('admin')->id();
+
+        $solicitudes = Solicitud::where('admin_id', $adminId)
+            ->with(['admin' => function($q) {
+                $q->select('id','name');
+            }])
+            ->orderBy('created_at','desc')
+            ->get();
+
+        Log::debug('Solicitudes del usuario', [
+            'admin_id' => $adminId,
+            'count'    => $solicitudes->count(),
+            'ids'      => $solicitudes->pluck('id')
+        ]);
+
+        return view('backend.pages.solicitudes.mis_solicitudes', compact('solicitudes'));
+    }
+
+    // 9) Generar PDF final
     public function generarDocumentoFinal($id)
     {
         $this->authorize('admin.view');
 
-        try {
-            $solicitud = Solicitud::findOrFail($id);
-            $logoPath = storage_path('app/public/logo.png');
-            $rqPath = storage_path('app/public/rq.png');
+        $solicitud      = Solicitud::findOrFail($id);
+        $logoPath       = storage_path('app/public/logo.png');
+        $rqDynamicPath  = storage_path('app/public/rq.png');
+        $qrStaticPath   = public_path('qr.png');
 
-            $data = [
-                'solicitud'   => $solicitud,
-                'logo_existe' => file_exists($logoPath),
-                'rq_existe'   => file_exists($rqPath),
-                'fecha'       => now()->format('d/m/Y H:i'),
-            ];
-
-            if ($data['logo_existe']) {
-                $data['logo'] = base64_encode(file_get_contents($logoPath));
-            }
-            if ($data['rq_existe']) {
-                $data['rq'] = base64_encode(file_get_contents($rqPath));
-            }
-
-            $pdf = Pdf::loadView('backend.pages.requests.documento_final', $data);
-            $pdf->setPaper('letter', 'portrait');
-            $pdf->setOption('isRemoteEnabled', true);
-
-            Log::info("PDF generado para solicitud ID: {$id}", [
-                'usuario' => Auth::guard('admin')->id(),
-                'ip'      => request()->ip(),
-            ]);
-
-            return $pdf->download("debida_diligencia_{$id}_" . now()->format('YmdHis') . ".pdf");
-        } catch (\Exception $e) {
-            Log::error("Error generando PDF: " . $e->getMessage(), [
-                'solicitud_id' => $id,
-                'error'        => $e->getTraceAsString(),
-            ]);
-            return back()->with('error', 'Error al generar el documento: ' . $e->getMessage());
-        }
-    }
-
-    // Previsualiza el documento PDF
-    public function previewDocumento($id)
-    {
-        $this->authorize('admin.view');
-        $solicitud = Solicitud::findOrFail($id);
-        $logoPath = storage_path('app/public/logo.png');
-        $rqPath = storage_path('app/public/rq.png');
         $data = [
-            'solicitud'   => $solicitud,
-            'logo_existe' => file_exists($logoPath),
-            'rq_existe'   => file_exists($rqPath),
-            'fecha'       => now()->format('d/m/Y H:i'),
+            'solicitud'     => $solicitud,
+            'logo_existe'   => file_exists($logoPath),
+            'rq_existe'     => file_exists($rqDynamicPath),
+            'fecha'         => now()->format('d/m/Y H:i'),
         ];
+
         if ($data['logo_existe']) {
             $data['logo'] = base64_encode(file_get_contents($logoPath));
         }
         if ($data['rq_existe']) {
-            $data['rq'] = base64_encode(file_get_contents($rqPath));
+            $data['rq'] = base64_encode(file_get_contents($rqDynamicPath));
         }
-        return view('backend.pages.requests.documento_final', $data);
+        if (file_exists($qrStaticPath)) {
+            $data['qr_img_static'] = base64_encode(file_get_contents($qrStaticPath));
+        }
+
+        $pdf = Pdf::loadView('backend.pages.requests.documento_final', $data)
+                  ->setPaper('letter','portrait')
+                  ->setOption('isRemoteEnabled', true);
+
+        return $pdf->download("debida_diligencia_{$id}_" . now()->format('YmdHis') . ".pdf");
+    }
+
+    // 10) Vista previa del PDF
+    public function previewDocumento($id)
+    {
+        $this->authorize('admin.view');
+
+        $solicitud      = Solicitud::findOrFail($id);
+        $logoPath       = storage_path('app/public/logo.png');
+        $rqDynamicPath  = storage_path('app/public/rq.png');
+        $qrStaticPath   = public_path('qr.png');
+
+        return view('backend.pages.requests.documento_final', [
+            'solicitud'      => $solicitud,
+            'logo_existe'    => file_exists($logoPath),
+            'rq_existe'      => file_exists($rqDynamicPath),
+            'fecha'          => now()->format('d/m/Y H:i'),
+            'logo'           => file_exists($logoPath)      ? base64_encode(file_get_contents($logoPath))      : null,
+            'rq'             => file_exists($rqDynamicPath) ? base64_encode(file_get_contents($rqDynamicPath)) : null,
+            'qr_img_static'  => file_exists($qrStaticPath)  ? base64_encode(file_get_contents($qrStaticPath))  : null,
+        ]);
     }
 }

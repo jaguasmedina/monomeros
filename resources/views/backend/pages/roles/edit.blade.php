@@ -61,7 +61,7 @@ Editar rol - Panel Administrador
                         </div>
 
                         <div class="form-group">
-                            <label for="name">Permissions</label>
+                            <label for="name">Permisos</label>
 
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="checkPermissionAll" value="1" {{ App\User::roleHasPermissions($role, $all_permissions) ? 'checked' : '' }}>

@@ -25,7 +25,7 @@ Crear usuario - Información PCP
             <div class="breadcrumbs-area clearfix">
                 <h4 class="page-title pull-left">Crear Registro</h4>
                 <ul class="breadcrumbs pull-left">
-                    <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ route('admin.dashboard') }}">Aréa de Trabajo</a></li>
                     <li><a href="{{ route('admin.dashboard') }}"> 
                         Información PCP</a></li>
                     <li><span>Create Admin</span></li>

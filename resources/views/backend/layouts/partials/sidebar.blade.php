@@ -2,6 +2,7 @@
     use Illuminate\Support\Facades\Auth;
     $usr = Auth::guard('admin')->user();
 @endphp
+
 <div class="sidebar-menu">
     <div class="sidebar-header">
         <div class="logo">
@@ -14,19 +15,21 @@
         <div class="menu-inner">
             <nav>
                 <ul class="metismenu" id="menu">
+
+                    {{-- Superadmin --}}
                     @if($usr->hasRole('superadmin'))
-                        <!-- Menú completo para Superadmin -->
                         <li class="active">
                             <a href="javascript:void(0)" aria-expanded="true">
                                 <i class="ti-dashboard"></i>
                                 <span>Registros</span>
                             </a>
-                            <ul class="collapse">
+                            <ul class="collapse in">
                                 <li class="{{ Route::is('admin.dashboard') ? 'active' : '' }}">
                                     <a href="{{ route('admin.dashboard') }}">Información PCP</a>
                                 </li>
                             </ul>
                         </li>
+
                         <li>
                             <a href="javascript:void(0)" aria-expanded="true">
                                 <i class="fa fa-tasks"></i>
@@ -45,6 +48,7 @@
                                 @endif
                             </ul>
                         </li>
+
                         <li>
                             <a href="javascript:void(0)" aria-expanded="true">
                                 <i class="fa fa-user"></i>
@@ -63,20 +67,23 @@
                                 @endif
                             </ul>
                         </li>
+
                         <li class="{{ Route::is('admin.informations.upload_excel') ? 'active' : '' }}">
                             <a href="{{ route('admin.informations.upload_excel') }}">
                                 <i class="ti-upload"></i>
                                 <span>Cargar Excel</span>
                             </a>
                         </li>
+
                         @if($usr->can('log.view'))
-                        <li class="{{ Route::is('admin.logs.index') ? 'active' : '' }}">
-                            <a href="{{ route('admin.logs.index') }}">
-                                <i class="fa fa-tasks"></i>
-                                Listado de Logs
-                            </a>
-                        </li>
+                            <li class="{{ Route::is('admin.logs.index') ? 'active' : '' }}">
+                                <a href="{{ route('admin.logs.index') }}">
+                                    <i class="fa fa-tasks"></i>
+                                    Listado de Logs
+                                </a>
+                            </li>
                         @endif
+
                         <li>
                             <a href="javascript:void(0)" aria-expanded="true">
                                 <i class="ti-clipboard"></i>
@@ -91,25 +98,28 @@
                                 </li>
                             </ul>
                         </li>
+
                         <li class="{{ Route::is('admin.analists.index') ? 'active' : '' }}">
                             <a href="{{ route('admin.analists.index') }}">
                                 <i class="fa fa-list"></i>
                                 Listado Solicitudes
                             </a>
                         </li>
+
                         <li class="{{ Route::is('admin.approver.index') ? 'active' : '' }}">
                             <a href="{{ route('admin.approver.index') }}">
                                 <i class="fa fa-list"></i>
                                 Aprobador SAGRILAFT
                             </a>
                         </li>
+
                         <li class="{{ Route::is('admin.approver2.index') ? 'active' : '' }}">
                             <a href="{{ route('admin.approver2.index') }}">
                                 <i class="fa fa-list"></i>
                                 Aprobador PTEE
                             </a>
                         </li>
-                        <!-- Nueva opción para Reportes y Estadísticas -->
+
                         <li>
                             <a href="javascript:void(0)" aria-expanded="false">
                                 <i class="ti-bar-chart"></i>
@@ -127,47 +137,58 @@
                                 </li>
                             </ul>
                         </li>
-                        <!-- Agregamos la opción para Historial de Movimientos -->
+
                         <li class="{{ Route::is('admin.movimientos.index') ? 'active' : '' }}">
                             <a href="{{ route('admin.movimientos.index') }}">
                                 <i class="ti-list"></i>
                                 <span>Historial Movimientos</span>
                             </a>
                         </li>
+
+                    {{-- Visualizador --}}
                     @elseif($usr->hasRole('visualizador'))
-                        <!-- Visualizador solo ve la opción de Visualizador -->
                         <li class="{{ Route::is('admin.visualizador.report') ? 'active' : '' }}">
                             <a href="{{ route('admin.visualizador.report') }}">
                                 <i class="ti-eye"></i>
                                 <span>Visualizador</span>
                             </a>
                         </li>
+
+                    {{-- Analista --}}
                     @elseif($usr->hasRole('analista'))
-                        <!-- Analista solo ve el listado de solicitudes (módulo Analists) -->
                         <li class="{{ Route::is('admin.analists.index') ? 'active' : '' }}">
                             <a href="{{ route('admin.analists.index') }}">
                                 <i class="fa fa-list"></i>
                                 Listado Solicitudes
                             </a>
                         </li>
+                        <li class="{{ Route::is('admin.movimientos.index') ? 'active' : '' }}">
+                            <a href="{{ route('admin.movimientos.index') }}">
+                                <i class="ti-list"></i>
+                                <span>Historial Movimientos</span>
+                            </a>
+                        </li>
+
+                    {{-- SAGRILAFT --}}
                     @elseif($usr->hasRole('sagrilaft'))
-                        <!-- SAGRILAFT solo ve su módulo -->
                         <li class="{{ Route::is('admin.approver.index') ? 'active' : '' }}">
                             <a href="{{ route('admin.approver.index') }}">
                                 <i class="fa fa-list"></i>
                                 Aprobador SAGRILAFT
                             </a>
                         </li>
+
+                    {{-- PTEE --}}
                     @elseif($usr->hasRole('ptee'))
-                        <!-- PTEE solo ve su módulo -->
                         <li class="{{ Route::is('admin.approver2.index') ? 'active' : '' }}">
                             <a href="{{ route('admin.approver2.index') }}">
                                 <i class="fa fa-list"></i>
                                 Aprobador PTEE
                             </a>
                         </li>
+
+                    {{-- Usuarios --}}
                     @elseif($usr->hasRole('usuarios'))
-                        <!-- Rol 'usuarios' solo ve Crear Solicitud y Mis Solicitudes -->
                         <li class="{{ Route::is('admin.service.request') ? 'active' : '' }}">
                             <a href="{{ route('admin.service.request') }}">
                                 <i class="ti-pencil-alt"></i>
@@ -182,22 +203,20 @@
                         </li>
                     @endif
 
-                            {{-- Siempre visible: Cerrar sesión --}}
-                            <li>
-                                <a href="{{ route('admin.logout.submit') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="fa fa-sign-out"></i>
-                                    <span>Cerrar sesión</span>
-                                </a>
-                                <form id="logout-form" action="{{ route('admin.logout.submit') }}" method="POST" style="display: none;">
-                                    @csrf
-                                </form>
-                            </li>
-
+                    {{-- Siempre visible: Cerrar sesión --}}
+                    <li>
+                        <a href="{{ route('admin.logout.submit') }}"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fa fa-sign-out"></i>
+                            <span>Cerrar sesión</span>
+                        </a>
+                        <form id="logout-form" action="{{ route('admin.logout.submit') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    </li>
 
                 </ul>
             </nav>
         </div>
     </div>
 </div>
-<!-- sidebar menu area end -->

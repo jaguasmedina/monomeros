@@ -17,7 +17,7 @@ Dashboard - Panel administrador
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Dashboard</h4>
+                <h4 class="page-title pull-left">Aréa de Trabajo</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="index.html">Inicio</a></li>
                     <li><span>Información PCP</span></li>
@@ -108,8 +108,30 @@ Dashboard - Panel administrador
      <script>
         if ($('#dataTable').length) {
             $('#dataTable').DataTable({
-                responsive: true
+                responsive: true,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros',
+                    zeroRecords: 'No se encontraron registros',
+                    info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                    infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                    infoFiltered: '(filtrado de _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    paginate: {
+                        first: 'Primero',
+                        last: 'Último',
+                        next: 'Siguiente',
+                        previous: 'Anterior'
+                    },
+                    loadingRecords: 'Cargando...',
+                    processing:     'Procesando...',
+                    emptyTable:     'No hay datos disponibles en la tabla',
+                    infoThousands:  '.',
+                    aria: {
+                      sortAscending:  ': activar para ordenar la columna de manera ascendente',
+                      sortDescending: ': activar para ordenar la columna de manera descendente'
+                    }
+                }
             });
         }
-     </script>
+    </script>
 @endsection

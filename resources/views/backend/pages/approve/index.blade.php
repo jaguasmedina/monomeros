@@ -14,6 +14,11 @@
 
 @section('admin-content')
 
+@php
+    // Por si no viniera $vista desde el controller
+    $vista = $vista ?? 1;
+@endphp
+
 <!-- page title area start -->
 <div class="page-title-area">
     <div class="row align-items-center">
@@ -40,7 +45,6 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="header-title float-left">{{ __('Solicitudes') }}</h4>
-
                     <div class="clearfix"></div>
                     <div class="data-tables">
                         @include('backend.layouts.partials.messages')
@@ -56,16 +60,31 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              @foreach ($solicitudes as $solicitud)
-                               <tr onclick="window.location='{{ route('admin.approver.show', $solicitud->id) }}?vista={{ $vista }}';" style="cursor: pointer;">
+                             
+                                @foreach ($solicitudes as $solicitud)
+                                {{--  Si ya está ENTREGADO, no lo mostramos  --}}
+                                    @if($solicitud->estado === 'ENTREGADO')
+                                    @continue
+                                @endif
+
+                                @php
+                                    // URL según rol
+                                    if ($vista === 1) {
+                                        $url = route('admin.approver.show', $solicitud->id) . '?vista=1';
+                                    } else {
+                                        $url = route('admin.approver2.show', $solicitud->id);
+                                    }
+                                @endphp
+
+                                <tr onclick="window.location='{{ $url }}';" style="cursor: pointer;">
                                     <td>{{ $solicitud->razon_social }}</td>
-                                    <td>{{ $solicitud->fecha_registro}}</td>
-                                    <td>{{ $solicitud->tipo_id.' '.$solicitud->identificador }}</td>
+                                    <td>{{ $solicitud->fecha_registro }}</td>
+                                    <td>{{ $solicitud->tipo_id . ' ' . $solicitud->identificador }}</td>
                                     <td>{{ $solicitud->motivo }}</td>
                                     <td>{{ $solicitud->tipo_cliente }}</td>
                                     <th></th>
-                                   </tr>
-                               @endforeach
+                                </tr>
+                              @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -88,8 +107,30 @@
      <script>
         if ($('#dataTable').length) {
             $('#dataTable').DataTable({
-                responsive: true
+                responsive: true,
+                language: {
+                    lengthMenu: 'Mostrar _MENU_ registros',
+                    zeroRecords: 'No se encontraron registros',
+                    info: 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                    infoEmpty: 'Mostrando 0 a 0 de 0 registros',
+                    infoFiltered: '(filtrado de _MAX_ registros totales)',
+                    search: 'Buscar:',
+                    paginate: {
+                        first: 'Primero',
+                        last: 'Último',
+                        next: 'Siguiente',
+                        previous: 'Anterior'
+                    },
+                    loadingRecords: 'Cargando...',
+                    processing:     'Procesando...',
+                    emptyTable:     'No hay datos disponibles en la tabla',
+                    infoThousands:  '.',
+                    aria: {
+                      sortAscending:  ': activar para ordenar la columna de manera ascendente',
+                      sortDescending: ': activar para ordenar la columna de manera descendente'
+                    }
+                }
             });
         }
-     </script>
+    </script>
 @endsection

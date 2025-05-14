@@ -62,6 +62,8 @@
                                         <option value="pa" @selected($solicitud->tipo_documento == 'pa')>P.A.</option>
                                         <option value="ppt" @selected($solicitud->tipo_documento == 'ppt')>PPT</option>
                                         <option value="pep" @selected($solicitud->tipo_documento == 'pep')>PEP</option>
+                                        <option value="ti" @selected($solicitud->tipo_documento == 'ti')>TI</option>
+                                        <option value="rc" @selected($solicitud->tipo_documento == 'rc')>RC</option>
                                     </select>
                                 </div>
                                 <div class="form-group  col-md-6 col-sm-12">
@@ -132,6 +134,8 @@
             <option value="pa">P.A.</option>
             <option value="ppt">PPT</option>
             <option value="pep">PEP</option>
+            <option value="ti">TI</option>
+            <option value="rc">RC</option>
         `;
 
         const opcionesJuridica = `

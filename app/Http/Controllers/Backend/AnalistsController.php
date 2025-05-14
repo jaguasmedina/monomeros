@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
-use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use App\Models\Solicitud;
@@ -14,24 +13,35 @@ use App\Models\Miembro;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MiembrosExport;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SolicitudStatusChanged;  // (o el nombre que le hayas dado)
+
+
 class AnalistsController extends Controller
 {
-    public function index(): Renderable
-    {   $this->checkAuthorization(auth()->user(), ['admin.view']);
-        $solicitudes = Solicitud::where('estado', 'enviado')->get();
-        return view('backend.pages.analists.index', [
-            'solicitudes' => $solicitudes,
-        ]);
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['titulo', 'nombre', 'tipo_id', 'numero_id', 'favorable', 'concepto_no_favorable'])
+            ->useLogName('miembros')
+            ->setDescriptionForEvent(fn(string $eventName) => "Se ha realizado la acción: {$eventName} en un miembro")
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 
+    public function index(): Renderable
+    {
+        $this->checkAuthorization(auth()->user(), ['admin.view']);
+        $solicitudes = Solicitud::where('estado', 'enviado')->get();
+        return view('backend.pages.analists.index', compact('solicitudes'));
+    }
 
     public function report(Request $request): Renderable
     {
-        // Recoger filtros (por ejemplo, nombre, tipo_id y favorable)
         $filters = $request->only(['nombre', 'tipo_id', 'favorable']);
-    
-        // Construir la consulta sobre la tabla miembros
-        $query = \App\Models\Miembro::query();
+        $query = Miembro::query();
         if (!empty($filters['nombre'])) {
             $query->where('nombre', 'like', '%' . $filters['nombre'] . '%');
         }
@@ -42,45 +52,40 @@ class AnalistsController extends Controller
             $query->where('favorable', $filters['favorable']);
         }
         $miembros = $query->get();
-    
         return view('backend.pages.reports.miembros', compact('miembros', 'filters'));
     }
-    
 
     public function exportReport(Request $request)
-{
-    $filters = $request->only(['nombre', 'tipo_id', 'favorable']);
-    return Excel::download(new MiembrosExport($filters), 'miembros.xlsx');
-}
-
-
+    {
+        $filters = $request->only(['nombre', 'tipo_id', 'favorable']);
+        return Excel::download(new MiembrosExport($filters), 'miembros.xlsx');
+    }
 
     public function show($id)
     {
         $solicitud = Solicitud::with('miembros')->findOrFail($id);
-        return view('backend.pages.analists.show', [
-            'solicitud' => $solicitud,
-        ]);
+        return view('backend.pages.analists.show', compact('solicitud'));
     }
+
     public function eliminarMiembro($id)
     {
         $miembro = Miembro::find($id);
-
         if (!$miembro) {
             return response()->json(['success' => false, 'message' => 'Miembro no encontrado'], 404);
         }
-
         $miembro->delete();
-
         return response()->json(['success' => true, 'message' => 'Miembro eliminado correctamente']);
     }
-    public function save(Request $request, $id){
+
+    public function save(Request $request, $id): RedirectResponse
+    {
         $request->validate([
-            'miembros.*.titulo' => 'required|string|max:100',
-            'miembros.*.nombre' => 'required|string|max:100',
-            'miembros.*.tipo_id' => 'required|string',
-            'miembros.*.numero_id' => 'required|string',
-            'miembros.*.favorable' => 'required|string',
+            'miembros.*.titulo'               => 'required|string|max:100',
+            'miembros.*.nombre'               => 'required|string|max:100',
+            'miembros.*.tipo_id'              => 'required|string',
+            'miembros.*.numero_id'            => 'required|string',
+            'miembros.*.favorable'            => 'required|string',
+            'miembros.*.observaciones'        => 'nullable|string',        // nuevo campo
         ]);
 
         $actualizarSolicitud = false;
@@ -91,58 +96,50 @@ class AnalistsController extends Controller
             Miembro::where('solicitud_id', $id)->delete();
             foreach ($request->miembros as $miembroData) {
                 Miembro::create([
-                    'solicitud_id' => $id,
-                    'titulo' => $miembroData['titulo'],
-                    'nombre' => $miembroData['nombre'],
-                    'tipo_id' => $miembroData['tipo_id'],
-                    'numero_id' => $miembroData['numero_id'],
-                    'favorable' => $miembroData['favorable'],
-                    'concepto_no_favorable' => $request->concepto_no_favorable
+                    'solicitud_id'           => $id,
+                    'titulo'                 => $miembroData['titulo'],
+                    'nombre'                 => $miembroData['nombre'],
+                    'tipo_id'                => $miembroData['tipo_id'],
+                    'numero_id'              => $miembroData['numero_id'],
+                    'favorable'              => $miembroData['favorable'],
+                    'concepto_no_favorable'  => $request->concepto_no_favorable,
+                    'observaciones'          => $miembroData['observaciones'] ?? null, // guardamos observaciones
                 ]);
-            }
 
-            if ($miembroData['favorable'] === "no") {
-                $actualizarSolicitud = true;
-                $motivoRechazo = $request->concepto_no_favorable ?? "No especificado";
-                $estado = 'documentacion';
-            }else{
-                $estado = 'aprobador_SAGRILAFT';
+                if ($miembroData['favorable'] === "no") {
+                    $actualizarSolicitud = true;
+                    $motivoRechazo = $request->concepto_no_favorable ?? "No especificado";
+                    $estado = 'documentacion';
+                }
             }
         }
-        if ($actualizarSolicitud) {
-            Solicitud::where('id', $id)->update([
-                'motivo' => $motivoRechazo,
-                'estado' => $estado
-            ]);
-        }else{
-            Solicitud::where('id', $id)->update([
-                'estado' => $estado
-            ]);
-        }
+
+                        $datos = ['estado' => $estado];
+                if ($actualizarSolicitud) {
+                    $datos['motivo'] = $motivoRechazo;
+                }
+                Solicitud::where('id', $id)->update($datos);
 
         return redirect()->back()->with('success', 'Solicitud procesada correctamente.');
     }
-    
-                public function savenf(Request $request, $id)
-            {
-                // Se asume que para actualizar la solicitud en este flujo (No Favorable)
-                // se requiere un valor para el campo 'motivo'. Si no se recibe, se asigna un valor por defecto.
-                $motivoRechazo = $request->input('concepto_no_favorable');
-                if (empty($motivoRechazo)) {
-                    $motivoRechazo = 'Sin motivo'; // valor por defecto para evitar null
-                }
-                
-                $razonDocumentacion = $request->input('razon_documentacion');
-                $numeroSolicitud = $request->input('numero_solicitud'); // si lo necesitas, aunque no se use en el update
 
-                // Actualizamos la solicitud con los nuevos valores
-                Solicitud::where('id', $id)->update([
-                    'motivo' => $motivoRechazo,
-                    'estado' => $razonDocumentacion
-                ]);
+    public function savenf(Request $request, $id): RedirectResponse
+    {
+        $motivoRechazo     = $request->input('concepto_no_favorable', 'Sin motivo');
+        $razonDocumentacion = $request->input('razon_documentacion');
 
-                return redirect()->back()->with('success', 'Solicitud actualizada correctamente.');
-            }
+        Solicitud::where('id', $id)->update([
+            'motivo' => $motivoRechazo,
+            'estado' => $razonDocumentacion,
+        ]);
 
+        // recarga el modelo para tener el estado actualizado
+        $solicitud = Solicitud::findOrFail($id);
 
+        // envía el correo al creador
+        Mail::to($solicitud->admin->email)
+            ->send(new SolicitudStatusChanged($solicitud));
+
+        return redirect()->back()->with('success', 'Solicitud actualizada correctamente.');
+    }
 }

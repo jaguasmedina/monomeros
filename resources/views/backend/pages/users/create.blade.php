@@ -25,7 +25,7 @@ Crear usuario - Panel Administrador
             <div class="breadcrumbs-area clearfix">
                 <h4 class="page-title pull-left">User Create</h4>
                 <ul class="breadcrumbs pull-left">
-                    <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ route('admin.dashboard') }}">Aréa de Trabajo</a></li>
                     <li><a href="{{ route('admin.users.index') }}">All Users</a></li>
                     <li><span>Create User</span></li>
                 </ul>
@@ -51,29 +51,29 @@ Crear usuario - Panel Administrador
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">User Name</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name">
+                                <label for="name">Nombre Usuario</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Nombre">
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="email">User Email</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter Email">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password">
-                            </div>
-                            <div class="form-group col-md-6 col-sm-12">
-                                <label for="password_confirmation">Confirm Password</label>
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Enter Password">
+                                <label for="email">Correo</label>
+                                <input type="text" class="form-control" id="email" name="email" placeholder="Correo">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Assign Roles</label>
+                                <label for="password">Contraseña</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña">
+                            </div>
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password_confirmation">Confirmar Contraseña</label>
+                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Contraseña">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6 col-sm-12">
+                                <label for="password">Asignar Roles</label>
                                 <select name="roles[]" id="roles" class="form-control select2" multiple>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role->name }}">{{ $role->name }}</option>
@@ -82,7 +82,7 @@ Crear usuario - Panel Administrador
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save User</button>
+                        <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Guardar Usuario</button>
                     </form>
                 </div>
             </div>

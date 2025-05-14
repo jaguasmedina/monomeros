@@ -10,14 +10,10 @@ class Miembro extends Model
     use HasFactory;
 
     protected $fillable = [
-        'solicitud_id',
-        'titulo',
-        'nombre',
-        'tipo_id',
-        'numero_id',
-        'favorable',
-        'concepto_no_favorable',
+        'solicitud_id', 'titulo', 'nombre', 'tipo_id', 'numero_id',
+        'favorable', 'concepto_no_favorable', 'observaciones',
     ];
+    
 
     public function solicitud()
     {

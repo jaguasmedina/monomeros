@@ -23,7 +23,7 @@ Editar usuario - panel administrador
             <div class="breadcrumbs-area clearfix">
                 <h4 class="page-title pull-left">Editar Usuario</h4>
                 <ul class="breadcrumbs pull-left">
-                    <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ route('admin.dashboard') }}">Aréa de Trabajo</a></li>
                     <li><a href="{{ route('admin.dashboard') }}">Todos los usuarios</a></li>
                     <li><span>Usuario - {{ $usuario->nombre_completo }}</span></li>
                 </ul>

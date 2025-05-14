@@ -24,7 +24,7 @@ Editar Administrador- Panel Administrador
             <div class="breadcrumbs-area clearfix">
                 <h4 class="page-title pull-left">Admin Edit</h4>
                 <ul class="breadcrumbs pull-left">
-                    <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ route('admin.dashboard') }}">Aréa de Trabajo</a></li>
                     <li><a href="{{ route('admin.admins.index') }}">All Admins</a></li>
                     <li><span>Edit Admin - {{ $admin->name }}</span></li>
                 </ul>
@@ -51,23 +51,23 @@ Editar Administrador- Panel Administrador
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="name">Admin Name</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" value="{{ $admin->name }}" required autofocus>
+                                <label for="name">Nombre</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" value="{{ $admin->name }}" required autofocus>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="email">Admin Email</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter Email" value="{{ $admin->email }}" required>
+                                <label for="email">Correo del Administrador</label>
+                                <input type="text" class="form-control" id="email" name="email" placeholder="Correo" value="{{ $admin->email }}" required>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password">Password (Optional)</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password">
+                                <label for="password">Contraseña</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña">
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label for="password_confirmation">Confirm Password (Optional)</label>
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Enter Password">
+                                <label for="password_confirmation">Confirmar Contraseña</label>
+                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirmar Contraseña">
                             </div>
                         </div>
 
@@ -87,7 +87,7 @@ Editar Administrador- Panel Administrador
                         </div>
 
                         <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
-                        <a href="{{ route('admin.admins.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancel</a>
+                        <a href="{{ route('admin.admins.index') }}" class="btn btn-secondary mt-4 pr-4 pl-4">Cancelar</a>
                     </form>
                 </div>
             </div>

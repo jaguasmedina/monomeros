@@ -50,6 +50,8 @@
                                     <option value="pa" {{ (isset($filters['tipo_id']) && $filters['tipo_id'] == 'pa') ? 'selected' : '' }}>P.A.</option>
                                     <option value="ppt" {{ (isset($filters['tipo_id']) && $filters['tipo_id'] == 'ppt') ? 'selected' : '' }}>PPT</option>
                                     <option value="pep" {{ (isset($filters['tipo_id']) && $filters['tipo_id'] == 'pep') ? 'selected' : '' }}>PEP</option>
+                                    <option value="ti" {{ (isset($filters['tipo_id']) && $filters['tipo_id'] == 'ti') ? 'selected' : '' }}>TI</option>
+                                    <option value="rc" {{ (isset($filters['tipo_id']) && $filters['tipo_id'] == 'rc') ? 'selected' : '' }}>RC</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-4">

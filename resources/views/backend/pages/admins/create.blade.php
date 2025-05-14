@@ -23,11 +23,11 @@ Crear Administrador- Panel Administrador
     <div class="row align-items-center">
         <div class="col-sm-6">
             <div class="breadcrumbs-area clearfix">
-                <h4 class="page-title pull-left">Admin Create</h4>
+                <h4 class="page-title pull-left">Crear Administrador</h4>
                 <ul class="breadcrumbs pull-left">
-                    <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li><a href="{{ route('admin.admins.index') }}">All Admins</a></li>
-                    <li><span>Create Admin</span></li>
+                    <li><a href="{{ route('admin.dashboard') }}">Aréa de Trabajo</a></li>
+                    <li><a href="{{ route('admin.admins.index') }}">Ver Todos</a></li>
+                    <li><span>Crear Admin</span></li>
                 </ul>
             </div>
         </div>
@@ -52,22 +52,22 @@ Crear Administrador- Panel Administrador
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="name"> Nombre</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required autofocus value="{{ old('name') }}">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" required autofocus value="{{ old('name') }}">
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="email">Correo</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter Email" required value="{{ old('email') }}">
+                                <input type="text" class="form-control" id="email" name="email" placeholder="Correo" required value="{{ old('email') }}">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="password">Contraseña</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
                                 <label for="password_confirmation">Confirmar Contraseña</label>
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Enter Password" required>
+                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirmar Contraseña" required>
                             </div>
                         </div>
 
@@ -82,7 +82,7 @@ Crear Administrador- Panel Administrador
                             </div>
                             <div class="form-group col-md-6 col-sm-6">
                                 <label for="username">Usuario</label>
-                                <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" required value="{{ old('username') }}">
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Usuario" required value="{{ old('username') }}">
                             </div>
                         </div>
 

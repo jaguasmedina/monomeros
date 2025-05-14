@@ -78,6 +78,8 @@
                                     <option value="pa" {{ old('tipo_id') == 'pa' ? 'selected' : '' }}>P.A.</option>
                                     <option value="ppt" {{ old('tipo_id') == 'ppt' ? 'selected' : '' }}>PPT</option>
                                     <option value="pep" {{ old('tipo_id') == 'pep' ? 'selected' : '' }}>PEP</option>
+                                    <option value="ti" {{ old('tipo_id') == 'ti' ? 'selected' : '' }}>TI</option>
+                                    <option value="rc" {{ old('tipo_id') == 'rc' ? 'selected' : '' }}>RC</option>
                                     <option value="nit" {{ old('tipo_id') == 'nit' ? 'selected' : '' }}>NIT</option>
                                     <option value="internacional" {{ old('tipo_id') == 'internacional' ? 'selected' : '' }}>INTERNACIONAL</option>
                                 </select>
@@ -99,7 +101,7 @@
                                 <input type="text" class="form-control" name="nombre_completo" id="nombre_completo" placeholder="Nombre Completo" value="{{ old('nombre_completo') }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
                             </div>
                             <div class="form-group col-md-6 col-sm-12 hidden" id="persona_juridica">
-                                <label>Subir Archivo(s) (PDF) * <small>(Máximo 3 archivos, 2MB cada uno)</small></label>
+                                <label>Subir Archivo(s) (PDF) * <small>(Puede adjuntar hasta 10 archivos PDF.)</small></label>
                                 <input type="file" name="archivos[]" id="archivos" class="form-control" accept="application/pdf" multiple>
                                 <div id="filePreview" class="file-preview"></div>
                             </div>
@@ -146,6 +148,8 @@ $(document).ready(function() {
             <option value="pa">P.A.</option>
             <option value="ppt">PPT</option>
             <option value="pep">PEP</option>
+            <option value="ti">TI</option>
+            <option value="rc">RC</option>
         `,
         tipoCliente: `
             <option value="contratista">Contratista</option>

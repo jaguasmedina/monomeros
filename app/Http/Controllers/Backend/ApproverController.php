@@ -7,205 +7,160 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Solicitud;
 use App\Models\Miembro;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SolicitudStatusChanged;  // (o el nombre que le hayas dado)
+
 
 class ApproverController extends Controller
 {
     public function index(): Renderable
     {
         $this->checkAuthorization(Auth::user(), ['admin.view']);
-        $solicitudes = Solicitud::where('estado', 'aprobador_SAGRILAFT')->get();
+        // Bandeja SAGRILAFT: estado APROBADOR_SAGRILAFT
+        $solicitudes = Solicitud::where('estado', 'APROBADOR_SAGRILAFT')->get();
+
         return view('backend.pages.approve.index', [
             'solicitudes' => $solicitudes,
-            'vista' => 1
-        ]);
-    }
-
-    public function show($id)
-    {
-        $solicitud = Solicitud::with('miembros')->findOrFail($id);
-        return view('backend.pages.approve.show', [
-            'solicitud' => $solicitud,
+            'vista'       => 1,
         ]);
     }
 
     public function index2(): Renderable
     {
         $this->checkAuthorization(Auth::user(), ['admin.view']);
-        $solicitudes = Solicitud::where('estado', 'aprobador_PTEE')->get();
+        // Bandeja PTEE: estado APROBADOR_PTEE
+        $solicitudes = Solicitud::where('estado', 'APROBADOR_PTEE')->get();
+
         return view('backend.pages.approve.index', [
             'solicitudes' => $solicitudes,
-            'vista' => 2
+            'vista'       => 2,
         ]);
     }
 
-    public function save(Request $request, $id)
+    public function show(Request $request, $id): Renderable
     {
-        // Convertir el parámetro "vista" a entero; se espera 1 (primer revisor) o 2 (segundo revisor)
-        $vista = (int) $request->query('vista', 1);
+        $this->checkAuthorization(Auth::user(), ['admin.view']);
+        $solicitud = Solicitud::with('miembros')->findOrFail($id);
+
+       // Detecta si estamos en PTEE (cualquier ruta que empiece con admin.approver2)
+        $vista = request()->routeIs('admin.approver2.*') ? 2 : 1;
+
+
+        return view('backend.pages.approve.show', [
+            'solicitud' => $solicitud,
+            'vista'     => $vista,
+        ]);
+    }
+
+    public function save(Request $request, $id): RedirectResponse
+    {
+        $this->checkAuthorization(Auth::user(), ['admin.view']);
+
+        // Tomamos primero el input "vista", si no existe tomamos el query param o 1 por defecto
+        $vista = (int) $request->input('vista', $request->query('vista', 1));
         Log::debug("ApproverController::save - Vista recibida", ['vista' => $vista]);
 
-        // Valores por defecto
-        $concepto_sagrilaft = 'Favorable';
-        $concepto_ptee = 'Favorable';
-        $concepto = 'Favorable';
-        $actualizarSolicitud = false;
-        $motivoRechazo = null;
-        // Valor inicial para el estado
-        $estado = 'documentacion';
+        // Inicializamos los valores por defecto
+        $concepto_sagrilaft = 'FAVORABLE';
+        $concepto_ptee      = 'FAVORABLE';
+        $concepto           = 'FAVORABLE';
+        $motivoRechazo      = null;
 
-        if (!empty($request->miembros) && is_array($request->miembros)) {
-            // Eliminamos los miembros previos
+        // Procesamos los miembros: los borramos y volvemos a insertar
+        if ($request->has('miembros') && is_array($request->miembros)) {
             Miembro::where('solicitud_id', $id)->delete();
             foreach ($request->miembros as $miembroData) {
                 Miembro::create([
-                    'solicitud_id' => $id,
-                    'titulo'       => $miembroData['titulo'],
-                    'nombre'       => $miembroData['nombre'],
-                    'tipo_id'      => $miembroData['tipo_id'],
-                    'numero_id'    => $miembroData['numero_id'],
-                    'favorable'    => $miembroData['favorable'],
+                    'solicitud_id'          => $id,
+                    'titulo'                => $miembroData['titulo'],
+                    'nombre'                => $miembroData['nombre'],
+                    'tipo_id'               => $miembroData['tipo_id'],
+                    'numero_id'             => $miembroData['numero_id'],
+                    'favorable'             => $miembroData['favorable'],
                     'concepto_no_favorable' => $request->concepto_no_favorable,
                 ]);
-            }
-            // Si el favorable del último miembro es "no", marcamos que se debe actualizar la solicitud (rechazo)
-            if ($miembroData['favorable'] === "no") {
-                $actualizarSolicitud = true;
-                $motivoRechazo = $request->concepto_no_favorable ?? "No especificado";
-                if ($vista == 1) {
-                    $estado = 'APROBADOR_PTEE';
+                // Si alguno es "no", marcamos rechazo
+                if ($miembroData['favorable'] === 'no') {
+                    $motivoRechazo = $request->concepto_no_favorable ?? 'No especificado';
+                    if ($vista === 1) {
+                        $concepto_sagrilaft = 'NO FAVORABLE';
+                    } else {
+                        $concepto_ptee = 'NO FAVORABLE';
+                    }
                 }
             }
         }
 
-        if ($vista == 1) {
-            // Para el primer revisor: se fija estado a 'APROBADOR_PTEE'
-            $estado = 'APROBADOR_PTEE';
-            if ($actualizarSolicitud) {
-                $concepto_sagrilaft = 'NO FAVORABLE';
-            }
-        } elseif ($vista == 2) {
-            // Para el segundo revisor (PTEE): forzamos el estado a 'ENTREGADO'
-            $estado = 'ENTREGADO';
-            if ($actualizarSolicitud) {
-                $concepto_ptee = 'NO FAVORABLE';
-            }
-        }
+                            // Establecemos el nuevo estado
+                if ($vista === 1 && $concepto_sagrilaft === 'NO FAVORABLE') {
+                    // Si SAGRILAFT rechaza, termina el flujo
+                    $estado = 'ENTREGADO';
+                    // Aseguramos que el concepto global también sea NO FAVORABLE
+                    $concepto = 'NO FAVORABLE';
+                } elseif ($vista === 1) {
+                    // Flujo normal: pasa a PTEE
+                    $estado = 'APROBADOR_PTEE';
+                } else {
+                    // Vista 2 (PTEE): siempre entrega
+                    $estado = 'ENTREGADO';
+                }
 
-        // Si alguno de los conceptos es "NO FAVORABLE", se asigna al concepto global
+
+        // Si alguno de los conceptos es NO FAVORABLE, el global también lo es
         if ($concepto_sagrilaft === 'NO FAVORABLE' || $concepto_ptee === 'NO FAVORABLE') {
             $concepto = 'NO FAVORABLE';
         }
 
-        // Capturamos el estado anterior de la solicitud antes de actualizar
-        $solicitudOriginal = Solicitud::findOrFail($id);
-        $estadoAnterior = $solicitudOriginal->estado;
-        Log::debug("Estado anterior:", ['estado' => $estadoAnterior]);
-
         // Actualizamos la solicitud
         Solicitud::where('id', $id)->update([
-            'motivo_rechazo'     => $motivoRechazo,
-            'estado'             => $estado,
-            'concepto_sagrilaft' => $concepto_sagrilaft,
-            'concepto_ptee'      => $concepto_ptee,
-            'concepto'           => $concepto,
+            'motivo_rechazo'      => $motivoRechazo,
+            'estado'              => $estado,
+            'concepto_sagrilaft'  => $concepto_sagrilaft,
+            'concepto_ptee'       => $concepto_ptee,
+            'concepto'            => $concepto,
         ]);
 
-        // Recargamos la solicitud actualizada
-        $solicitud = Solicitud::findOrFail($id);
-        Log::debug("Estado actualizado en solicitud", ['estado' => $solicitud->estado]);
+            $solicitud = Solicitud::findOrFail($id);
 
-        // Registrar el movimiento se realiza automáticamente en el Observer
-        // (Se elimina la llamada manual para evitar duplicidad)
+    // enviamos la notificación sólo si cambió de estado
+    Mail::to($solicitud->admin->email)
+        ->send(new SolicitudStatusChanged($solicitud));
 
-        // Si el estado es ENTREGADO, actualizamos o insertamos en la tabla "informacion"
-        if (strtoupper($solicitud->estado) === 'ENTREGADO') {
+        // Si quedó ENTREGADO, insertamos en "informacion"
+        if ($estado === 'ENTREGADO') {
+            $sol = Solicitud::find($id);
             DB::table('informacion')->updateOrInsert(
-                ['identificador' => $solicitud->identificador],
+                ['identificador' => $sol->identificador],
                 [
-                    'tipo'            => $solicitud->tipo_id,
-                    'nombre_completo' => $solicitud->nombre_completo ?? $solicitud->razon_social,
-                    'empresa'         => $solicitud->razon_social,
-                    'fecha_registro'  => $solicitud->fecha_registro,
-                    'fecha_vigencia'  => Carbon::parse($solicitud->fecha_registro)->addYears(2)->format('Y-m-d'),
-                    'cargo'           => $solicitud->tipo_cliente,
-                    'estado'          => $solicitud->concepto,
+                    'tipo'            => $sol->tipo_id,
+                    'nombre_completo' => $sol->nombre_completo ?? $sol->razon_social,
+                    'empresa'         => $sol->razon_social,
+                    'fecha_registro'  => $sol->fecha_registro,
+                    'fecha_vigencia'  => Carbon::parse($sol->fecha_registro)->addYears(2)->format('Y-m-d'),
+                    'cargo'           => $sol->tipo_cliente,
+                    'estado'          => $sol->concepto,
                     'created_at'      => now(),
                     'updated_at'      => now(),
                 ]
             );
         }
 
-        return redirect()->back()->with('success', 'Se guardaron los cambios realizados');
-    }
+        //return back()->with('success', 'Se guardaron los cambios correctamente.');
 
-    public function generarDocumentoFinal($id)
-    {
-        $this->authorize('admin.view');
-
-        try {
-            $solicitud = Solicitud::findOrFail($id);
-            $logoPath = storage_path('app/public/logo.png');
-            $rqPath = storage_path('app/public/rq.png');
-
-            $data = [
-                'solicitud'   => $solicitud,
-                'logo_existe' => file_exists($logoPath),
-                'rq_existe'   => file_exists($rqPath),
-                'fecha'       => now()->format('d/m/Y H:i'),
-            ];
-
-            if ($data['logo_existe']) {
-                $data['logo'] = base64_encode(file_get_contents($logoPath));
-            }
-            if ($data['rq_existe']) {
-                $data['rq'] = base64_encode(file_get_contents($rqPath));
-            }
-
-            $pdf = Pdf::loadView('backend.pages.requests.documento_final', $data);
-            $pdf->setPaper('letter', 'portrait');
-            $pdf->setOption('isRemoteEnabled', true);
-
-            Log::info("PDF generado para solicitud ID: {$id}", [
-                'usuario' => Auth::guard('admin')->id(),
-                'ip'      => request()->ip(),
-            ]);
-
-            return $pdf->download("debida_diligencia_{$id}_" . now()->format('YmdHis') . ".pdf");
-        } catch (\Exception $e) {
-            Log::error("Error generando PDF: " . $e->getMessage(), [
-                'solicitud_id' => $id,
-                'error'        => $e->getTraceAsString(),
-            ]);
-            return back()->with('error', 'Error al generar el documento: ' . $e->getMessage());
+        if ($vista === 2) {
+            return redirect()
+                ->route('admin.approver2.index')
+                ->with('success', 'Decisión registrada. Volviendo a bandeja PTEE.');
         }
-    }
-
-    public function previewDocumento($id)
-    {
-        $this->authorize('admin.view');
-        $solicitud = Solicitud::findOrFail($id);
-        $logoPath = storage_path('app/public/logo.png');
-        $rqPath = storage_path('app/public/rq.png');
-        $data = [
-            'solicitud'   => $solicitud,
-            'logo_existe' => file_exists($logoPath),
-            'rq_existe'   => file_exists($rqPath),
-            'fecha'       => now()->format('d/m/Y H:i'),
-        ];
-        if ($data['logo_existe']) {
-            $data['logo'] = base64_encode(file_get_contents($logoPath));
-        }
-        if ($data['rq_existe']) {
-            $data['rq'] = base64_encode(file_get_contents($rqPath));
-        }
-        return view('backend.pages.requests.documento_final', $data);
+    
+        return redirect()
+            ->route('admin.approver.index')
+            ->with('success', 'Decisión registrada. Volviendo a bandeja SAGRILAFT.');
+    
     }
 }
