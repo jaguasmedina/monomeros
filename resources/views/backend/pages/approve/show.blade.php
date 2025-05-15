@@ -64,12 +64,28 @@
                             </div>
                             <div class="form-group col-md-4">
                                 <label>Descargar Documento Original</label><br>
-                                @if($solicitud->archivo)
-                                    <a href="{{ asset('storage/' . $solicitud->archivo) }}"
-                                       class="btn btn-success" target="_blank">
-                                        <i class="fa fa-download"></i> PDF
-                                    </a>
-                                @else
+                                        @php
+                                        // Si el campo viene como JSON, lo decodificamos. Si no, lo tratamos como string único.
+                                        $paths = [];
+                                        if ($solicitud->archivo) {
+                                            $decoded = json_decode($solicitud->archivo, true);
+                                            $paths   = is_array($decoded) ? $decoded : [$solicitud->archivo];
+                                        }
+                                    @endphp
+
+                                    @if(count($paths))
+                                        <label>Descargar Documento Original</label><br>
+                                        @foreach($paths as $path)
+                                            <a href="{{ asset('storage/' . trim($path, '"')) }}"
+                                            class="btn btn-success btn-sm"
+                                            target="_blank">
+                                                <i class="fa fa-download"></i> {{ basename($path) }}
+                                            </a>
+                                        @endforeach
+                                    @else
+                                        <p>No hay documento adjunto</p>
+                                    @endif
+
                                     <p>No hay documento adjunto</p>
                                 @endif
                             </div>
