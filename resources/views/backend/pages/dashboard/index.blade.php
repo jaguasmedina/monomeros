@@ -48,48 +48,34 @@ Dashboard - Panel administrador
                     <div class="data-tables">
                         @include('backend.layouts.partials.messages')
                         <table id="dataTable" class="text-center">
-                            <thead class="bg-light text-capitalize">
+                            <thead>
                                 <tr>
-                                    <th width="5%">{{ __('Identificador') }}</th>
-                                    <th width="5%">{{ __('Tipo') }}</th>
-                                    <th width="10%">{{ __('Nombre') }}</th>
-                                    <th width="10%">{{ __('Empresa') }}</th>
-                                    <th width="10%">{{ __('Fecha Registro') }}</th>
-                                    <th width="10%">{{ __('Fecha Vigencia') }}</th>
-                                    <th width="10%">{{ __('Cargo') }}</th>
-                                    <th width="10%">{{ __('Estado') }}</th>
-                                    <th width="10%">{{ __('Opciones') }}</th>
+                                  <th>ID Solicitud</th>
+                                  <th>Identificador</th>
+                                  <th>Tipo</th>
+                                  <th>Nombre</th>
+                                  <th>Empresa</th>
+                                  <th>Fecha Registro</th>
+                                  <th>Fecha Vigencia</th>
+                                  <th>Cargo</th>
+                                  <th>Estado</th>
                                 </tr>
-                            </thead>
-                            <tbody>
-                               @foreach ($informations as $information)
-                               <tr>
-                                    <td>{{ $information->identificador }}</td>
-                                    <td>{{ $information->tipo }}</td>
-                                    <td>{{ $information->nombre_completo }}</td>
-                                    <td>{{ $information->empresa }}</td>
-                                    <td>{{ $information->fecha_registro }}</td>
-                                    <td>{{ $information->fecha_vigencia }}</td>
-                                    <td>{{ $information->cargo }}</td>
-                                    <td>{{ $information->estado }}</td>
-                                    <td>
-                                        @if (auth()->user()->can('dashboard.edit'))
-                                        <a class="btn btn-success text-white" href="{{ route('admin.informations.edit', $information->identificador) }}">Editar</a>
-                                        @endif
-                                        @if (auth()->user()->can('dashboard.delete'))
-                                        <a class="btn btn-danger text-white" href="javascript:void(0);"
-                                        onclick="event.preventDefault(); if(confirm('Estas seguro que deseas eliminar este registro?')) { document.getElementById('delete-form-{{ $information->identificador }}').submit(); }">
-                                            {{ __('Eliminar') }}
-                                        </a>
-                                        <form id="delete-form-{{ $information->identificador }}" action="{{ route('admin.informations.destroy', $information->identificador) }}" method="POST" style="display: none;">
-                                            @method('DELETE')
-                                            @csrf
-                                        </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                               @endforeach
-                            </tbody>
+                              </thead>
+                              <tbody>
+                                @foreach($informations as $info)
+                                  <tr>
+                                    <td>{{ $info->solicitud->id ?? '—' }}</td>
+                                    <td>{{ $info->identificador }}</td>
+                                    <td>{{ $info->tipo }}</td>
+                                    <td>{{ $info->nombre_completo }}</td>
+                                    <td>{{ $info->empresa }}</td>
+                                    <td>{{ $info->fecha_registro }}</td>
+                                    <td>{{ $info->fecha_vigencia }}</td>
+                                    <td>{{ $info->cargo }}</td>
+                                    <td>{{ $info->estado }}</td>
+                                  </tr>
+                                @endforeach
+                              </tbody>
                         </table>
                     </div>
                 </div>

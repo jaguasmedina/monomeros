@@ -1,3 +1,4 @@
+{{-- resources/views/backend/pages/reports/informacion.blade.php --}}
 @extends('backend.layouts.master')
 
 @section('title', 'Reporte de Información')
@@ -81,6 +82,7 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
+                                    <th>ID Solicitud</th>
                                     <th>Identificador</th>
                                     <th>Tipo</th>
                                     <th>Nombre Completo</th>
@@ -94,6 +96,7 @@
                             <tbody>
                                 @foreach($informacion as $info)
                                     <tr>
+                                        <td>{{ $info->solicitud_id }}</td>
                                         <td>{{ $info->identificador }}</td>
                                         <td>{{ $info->tipo }}</td>
                                         <td>{{ $info->nombre_completo }}</td>
@@ -106,11 +109,12 @@
                                 @endforeach
                                 @if($informacion->isEmpty())
                                     <tr>
-                                        <td colspan="8" class="text-center">No se encontraron registros.</td>
+                                        <td colspan="9" class="text-center">No se encontraron registros.</td>
                                     </tr>
                                 @endif
                             </tbody>
                         </table>
+                        
                     </div>
                 </div>
             </div>

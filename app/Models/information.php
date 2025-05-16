@@ -42,4 +42,16 @@ class Information extends Model
         {
             return "El usuario " . auth()->user()->name . " ha realizado la acción: {$eventName} en información.";
         }
+
+        /**
+     * Relación con Solicitud, vinculando por el campo 'identificador'
+     */
+    public function solicitud()
+    {
+        return $this->belongsTo(
+            \App\Models\Solicitud::class,
+            'identificador',  // FK en información
+            'identificador'   // PK en solicitudes
+        );
+    }
 }

@@ -64,6 +64,7 @@ namespace App\Models{
  * @property string $estado
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Solicitud|null $solicitud
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Information newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Information newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Information query()
