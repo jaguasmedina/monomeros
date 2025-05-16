@@ -34,7 +34,9 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Fecha</label>
-                                <input type="date" readonly name="fecha_registro" value="{{ $solicitud->fecha_registro }}" class="form-control">
+                                <input type="date" readonly name="fecha_registro"
+                                value="{{ \Carbon\Carbon::parse($solicitud->fecha_registro)->format('Y-m-d') }}"
+                                class="form-control">
                             </div>
                         </div>
                         <div class="form-row">
@@ -217,7 +219,7 @@
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    let maxMembers = 2;
+    let maxMembers = 100;
     let memberCount = document.querySelectorAll("#membersContainer .member").length;
     let membersContainer = document.getElementById("membersContainer");
     let conceptoContainer = document.getElementById("conceptoContainer");
