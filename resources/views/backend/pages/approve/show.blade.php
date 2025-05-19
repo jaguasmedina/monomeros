@@ -26,11 +26,11 @@
                     <h4 class="header-title">Solicitud #{{ $solicitud->id }}</h4>
                     @include('backend.layouts.partials.messages')
 
-                    {{-- Formulario de decisión --}}
-                    <form action="{{ route('admin.approver.save', $solicitud->id) }}?vista={{ request('vista') }}" method="POST">
+                    <form action="{{ route('admin.approver.save', ['id' => $solicitud->id, 'vista' => request('vista')]) }}"
+                          method="POST">
                         @csrf
 
-                        {{-- 1) Número y Fecha --}}
+                        <!-- 1) Número y Fecha -->
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label>Número de Solicitud</label>
@@ -43,11 +43,12 @@
                             </div>
                         </div>
 
-                        {{-- 2) Razón Social e Identificación --}}
+                        <!-- 2) Razón Social e Identificación -->
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label>Razón Social</label>
-                                <input type="text" readonly class="form-control" value="{{ $solicitud->razon_social }}">
+                                <input type="text" readonly class="form-control"
+                                       value="{{ $solicitud->razon_social }}">
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Identificación</label>
@@ -56,42 +57,37 @@
                             </div>
                         </div>
 
-                        {{-- 3) Motivo y descarga del original --}}
+                        <!-- 3) Motivo y Descarga de Documento -->
                         <div class="form-row">
                             <div class="form-group col-md-8">
                                 <label>Motivo</label>
-                                <textarea readonly class="form-control" style="min-height:100px;">{{ $solicitud->motivo }}</textarea>
+                                <textarea readonly class="form-control"
+                                          style="min-height: 100px;">{{ $solicitud->motivo }}</textarea>
                             </div>
                             <div class="form-group col-md-4">
                                 <label>Descargar Documento Original</label><br>
-                                        @php
-                                        // Si el campo viene como JSON, lo decodificamos. Si no, lo tratamos como string único.
-                                        $paths = [];
-                                        if ($solicitud->archivo) {
-                                            $decoded = json_decode($solicitud->archivo, true);
-                                            $paths   = is_array($decoded) ? $decoded : [$solicitud->archivo];
-                                        }
-                                    @endphp
 
-                                    @if(count($paths))
-                                        <label>Descargar Documento Original</label><br>
-                                        @foreach($paths as $path)
-                                            <a href="{{ asset('storage/' . trim($path, '"')) }}"
-                                            class="btn btn-success btn-sm"
-                                            target="_blank">
-                                                <i class="fa fa-download"></i> {{ basename($path) }}
-                                            </a>
-                                        @endforeach
-                                    @else
-                                        <p>No hay documento adjunto</p>
-                                    @endif
+                                @php
+                                    // Si el campo archivo viene como JSON de rutas
+                                    $paths = json_decode($solicitud->archivo ?? '[]', true) ?: [];
+                                @endphp
 
+                                @if(count($paths))
+                                    @foreach($paths as $path)
+                                        <a href="{{ asset('storage/' . trim($path, '"')) }}"
+                                           class="btn btn-success btn-sm"
+                                           target="_blank">
+                                           <i class="fa fa-download"></i> {{ basename($path) }}
+                                        </a>
+                                    @endforeach
+                                @else
                                     <p>No hay documento adjunto</p>
                                 @endif
+
                             </div>
                         </div>
 
-                        {{-- 4) Miembros y decisión --}}
+                        <!-- 4) Miembros y decisión -->
                         <div id="membersContainer">
                             @foreach ($solicitud->miembros as $i => $miembro)
                                 <div class="form-row member" data-miembro-id="{{ $miembro->id }}">
@@ -108,14 +104,14 @@
                                     <div class="form-group col-md-2">
                                         <label>Tipo ID</label>
                                         <select name="miembros[{{ $i }}][tipo_id]" class="form-control" required>
-                                            <option value="cc"         {{ $miembro->tipo_id=='cc'?'selected':'' }}>C.C.</option>
-                                            <option value="ce"         {{ $miembro->tipo_id=='ce'?'selected':'' }}>C.E.</option>
-                                            <option value="pa"         {{ $miembro->tipo_id=='pa'?'selected':'' }}>P.A.</option>
-                                            <option value="ppt"        {{ $miembro->tipo_id=='ppt'?'selected':'' }}>PPT</option>
-                                            <option value="pep"        {{ $miembro->tipo_id=='pep'?'selected':'' }}>PEP</option>
-                                            <option value="ti"         {{ $miembro->tipo_id=='ti'?'selected':'' }}>TI</option>
-                                            <option value="rc"         {{ $miembro->tipo_id=='rc'?'selected':'' }}>RC</option>
-                                            <option value="nit"        {{ $miembro->tipo_id=='nit'?'selected':'' }}>NIT</option>
+                                            <option value="cc" {{ $miembro->tipo_id=='cc'?'selected':'' }}>C.C.</option>
+                                            <option value="ce" {{ $miembro->tipo_id=='ce'?'selected':'' }}>C.E.</option>
+                                            <option value="pa" {{ $miembro->tipo_id=='pa'?'selected':'' }}>P.A.</option>
+                                            <option value="ppt" {{ $miembro->tipo_id=='ppt'?'selected':'' }}>PPT</option>
+                                            <option value="pep" {{ $miembro->tipo_id=='pep'?'selected':'' }}>PEP</option>
+                                            <option value="ti" {{ $miembro->tipo_id=='ti'?'selected':'' }}>TI</option>
+                                            <option value="rc" {{ $miembro->tipo_id=='rc'?'selected':'' }}>RC</option>
+                                            <option value="nit" {{ $miembro->tipo_id=='nit'?'selected':'' }}>NIT</option>
                                             <option value="internacional" {{ $miembro->tipo_id=='internacional'?'selected':'' }}>INTERNACIONAL</option>
                                         </select>
                                     </div>
@@ -136,15 +132,15 @@
                             @endforeach
                         </div>
 
-                        {{-- 5) Concepto de No Favorable --}}
+                        <!-- 5) Concepto de No Favorable -->
                         <div id="conceptoContainer"
-                             class="form-group {{ $solicitud->miembros->where('favorable','no')->count()?'':'hidden' }}">
+                             class="form-group {{ $solicitud->miembros->where('favorable','no')->count() ? '' : 'hidden' }}">
                             <label>Concepto de No Favorable</label>
                             <textarea name="concepto_no_favorable"
                                       class="form-control">{{ old('concepto_no_favorable', $solicitud->concepto_no_favorable ?? '') }}</textarea>
                         </div>
 
-                        {{-- Botones de acción --}}
+                        <!-- Botones -->
                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                         <a href="{{ request('vista') == 2
                                         ? route('admin.approver2.index')
@@ -152,18 +148,17 @@
                            class="btn btn-secondary ml-2">
                             Volver
                         </a>
+
+                        {{-- PDF Final sólo si ya quedó ENTREGADO --}}
+                        @if($solicitud->estado === 'ENTREGADO')
+                            <a href="{{ route('admin.service.documento.final', $solicitud->id) }}"
+                               target="_blank"
+                               class="btn btn-success ml-2">
+                                <i class="fa fa-file-pdf-o"></i> PDF Final
+                            </a>
+                        @endif
+
                     </form>
-
-                                        {{-- botón PDF final si quedó ENTREGADO, ya sea desde SAGRILAFT o PTEE --}}
-                    @if($solicitud->estado === 'ENTREGADO')
-                    <a href="{{ route('admin.service.documento.final', $solicitud->id) }}"
-                    target="_blank"
-                    class="btn btn-success ml-2">
-                        <i class="fa fa-file-pdf-o"></i> PDF Final
-                    </a>
-                    @endif
-
-
                 </div>
             </div>
         </div>
@@ -173,7 +168,7 @@
 
 @section('scripts')
 <script>
-    // Mostrar/ocultar "Concepto de No Favorable"
+    // Mostrar/ocultar textarea de “Concepto de No Favorable”
     document.querySelectorAll('.favorable-select').forEach(select => {
         select.addEventListener('change', () => {
             const anyNo = Array.from(document.querySelectorAll('.favorable-select'))
