@@ -8,7 +8,21 @@
     .table-responsive {
         margin-top: 20px;
     }
-    /* Estilos para el flujo visual, similares a los que se usan en query.blade */
+
+    /* ======== OVERRIDE PARA STRIPES CLÁSICOS ======== */
+    /* filas impares en gris claro */
+    .table-striped tbody tr.odd,
+    .data-tables table.dataTable.stripe tbody tr.odd {
+        background-color: #f9f9f9 !important;
+    }
+    /* filas pares en blanco */
+    .table-striped tbody tr.even,
+    .data-tables table.dataTable.stripe tbody tr.even {
+        background-color: #ffffff !important;
+    }
+    /* ================================================ */
+
+    /* Estilos para el flujo visual, similares a los que usas en query.blade */
     .flow-container {
         display: flex;
         width: 600px;
@@ -91,20 +105,20 @@
                 <div class="card-body">
                     <h4 class="header-title">Listado de Mis Solicitudes</h4>
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-striped table-bordered dataTable">
                             <thead>
                                 <tr>
-                                    <th>ID Solicitud</th>
-                                    <th>Tipo de Persona</th>
-                                    <th>Fecha Registro</th>
-                                    <th>Razón Social</th>
-                                    <th>Tipo ID</th>
-                                    <th>Identificador</th>
-                                    <th>Motivo</th>
-                                    <th>Nombre Completo</th>
-                                    <th>Tipo Cliente</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th>ID SOLICITUD</th>
+                                    <th>TIPO DE PERSONA</th>
+                                    <th>FECHA REGISTRO</th>
+                                    <th>RAZÓN SOCIAL</th>
+                                    <th>TIPO ID</th>
+                                    <th>IDENTIFICADOR</th>
+                                    <th>MOTIVO</th>
+                                    <th>NOMBRE COMPLETO</th>
+                                    <th>TIPO CLIENTE</th>
+                                    <th>ESTADO</th>
+                                    <th>ACCIONES</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -119,7 +133,7 @@
                                         <td>{{ $solicitud->motivo }}</td>
                                         <td>{{ $solicitud->nombre_completo }}</td>
                                         <td>{{ $solicitud->tipo_cliente }}</td>
-                                        <td>{{ $solicitud->estado }}</td>
+                                        <td>{{ strtoupper($solicitud->estado) }}</td>
                                         <td>
                                             @if(strtoupper($solicitud->estado) == 'DOCUMENTACION' && $solicitud->admin_id == auth()->guard('admin')->id())
                                                 <a href="{{ route('admin.service.edit', $solicitud->id) }}" class="btn btn-primary btn-sm">Editar</a>
@@ -129,12 +143,8 @@
                                                 N/A
                                             @endif
                                         </td>
-                                        
                                     </tr>
-                                    @php
-                                        // Ajusta el colspan del flujo visual: si la tabla tiene 11 columnas, usamos 11
-                                        $colspan = 11;
-                                    @endphp
+                                    @php $colspan = 11; @endphp
                                     @include('backend.pages.requests.partials.estado_flow', ['estado' => $solicitud->estado, 'colspan' => $colspan])
                                 @empty
                                     <tr>

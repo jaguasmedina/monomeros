@@ -26,8 +26,7 @@
                     <h4 class="header-title">Solicitud #{{ $solicitud->id }}</h4>
                     @include('backend.layouts.partials.messages')
 
-                    <form action="{{ route('admin.approver.save', ['id' => $solicitud->id, 'vista' => request('vista')]) }}"
-                          method="POST">
+                    <form action="{{ route('admin.approver.save', ['id' => $solicitud->id, 'vista' => request('vista')]) }}" method="POST">
                         @csrf
 
                         <!-- 1) Número y Fecha -->
@@ -92,17 +91,17 @@
                             @foreach ($solicitud->miembros as $i => $miembro)
                                 <div class="form-row member" data-miembro-id="{{ $miembro->id }}">
                                     <div class="form-group col-md-3">
-                                        <label>Título</label>
+                                        <label>TÍTULO</label>
                                         <input type="text" name="miembros[{{ $i }}][titulo]"
                                                class="form-control" value="{{ $miembro->titulo }}" required>
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label>Nombre</label>
+                                        <label>NOMBRE</label>
                                         <input type="text" name="miembros[{{ $i }}][nombre]"
                                                class="form-control" value="{{ $miembro->nombre }}" required>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label>Tipo ID</label>
+                                        <label>TIPO ID</label>
                                         <select name="miembros[{{ $i }}][tipo_id]" class="form-control" required>
                                             <option value="cc" {{ $miembro->tipo_id=='cc'?'selected':'' }}>C.C.</option>
                                             <option value="ce" {{ $miembro->tipo_id=='ce'?'selected':'' }}>C.E.</option>
@@ -116,12 +115,12 @@
                                         </select>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label>Número ID</label>
+                                        <label>NÚMERO ID</label>
                                         <input type="text" name="miembros[{{ $i }}][numero_id]"
                                                class="form-control" value="{{ $miembro->numero_id }}" required>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label>¿Favorable?</label>
+                                        <label>FAVORABLE?</label>
                                         <select name="miembros[{{ $i }}][favorable]"
                                                 class="form-control favorable-select" required>
                                             <option value="si" {{ $miembro->favorable=='si'?'selected':'' }}>Sí</option>
@@ -135,13 +134,13 @@
                         <!-- 5) Concepto de No Favorable -->
                         <div id="conceptoContainer"
                              class="form-group {{ $solicitud->miembros->where('favorable','no')->count() ? '' : 'hidden' }}">
-                            <label>Concepto de No Favorable</label>
+                            <label>CONCEPTO DE NO FAVORABLE</label>
                             <textarea name="concepto_no_favorable"
                                       class="form-control">{{ old('concepto_no_favorable', $solicitud->concepto_no_favorable ?? '') }}</textarea>
                         </div>
 
                         <!-- Botones -->
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-primary">GUARDAR CAMBIOS</button>
                         <a href="{{ request('vista') == 2
                                         ? route('admin.approver2.index')
                                         : route('admin.approver.index') }}"
@@ -154,11 +153,14 @@
                             <a href="{{ route('admin.service.documento.final', $solicitud->id) }}"
                                target="_blank"
                                class="btn btn-success ml-2">
-                                <i class="fa fa-file-pdf-o"></i> PDF Final
+                                <i class="fa fa-file-pdf-o"></i> PDF FINAL
                             </a>
                         @endif
 
-                    </form>
+                        <input type="hidden" name="vista" value="{{ $vista }}">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </form>
+                        
                 </div>
             </div>
         </div>

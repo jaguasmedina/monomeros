@@ -25,7 +25,7 @@
                             </a>
                             <ul class="collapse in">
                                 <li class="{{ Route::is('admin.dashboard') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.dashboard') }}">Información PCP</a>
+                                    <a href="{{ route('admin.dashboard') }}">INFORMACIÓN PCP</a>
                                 </li>
                             </ul>
                         </li>

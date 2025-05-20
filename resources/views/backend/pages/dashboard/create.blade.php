@@ -27,7 +27,7 @@ Crear usuario - Información PCP
                 <ul class="breadcrumbs pull-left">
                     <li><a href="{{ route('admin.dashboard') }}">Aréa de Trabajo</a></li>
                     <li><a href="{{ route('admin.dashboard') }}"> 
-                        Información PCP</a></li>
+                        INFORMACIÓN PCP</a></li>
                     <li><span>Create Admin</span></li>
                 </ul>
             </div>

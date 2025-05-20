@@ -20,7 +20,7 @@ Dashboard - Panel administrador
                 <h4 class="page-title pull-left">Aréa de Trabajo</h4>
                 <ul class="breadcrumbs pull-left">
                     <li><a href="index.html">Inicio</a></li>
-                    <li><span>Información PCP</span></li>
+                    <li><span>INFORMACIÓN PCP</span></li>
                 </ul>
             </div>
         </div>
@@ -50,15 +50,15 @@ Dashboard - Panel administrador
                         <table id="dataTable" class="text-center">
                             <thead>
                                 <tr>
-                                  <th>ID Solicitud</th>
-                                  <th>Identificador</th>
-                                  <th>Tipo</th>
-                                  <th>Nombre</th>
-                                  <th>Empresa</th>
-                                  <th>Fecha Registro</th>
-                                  <th>Fecha Vigencia</th>
-                                  <th>Cargo</th>
-                                  <th>Estado</th>
+                                  <th>ID SOLICITUD</th>
+                                  <th>IDENTIFICADOR</th>
+                                  <th>TIPO</th>
+                                  <th>NOMBRE</th>
+                                  <th>EMPRESA</th>
+                                  <th>FECHA REGISTRO</th>
+                                  <th>FECHA VIGENCIA</th>
+                                  <th>CARGO</th>
+                                  <th>ESTADO</th>
                                 </tr>
                               </thead>
                               <tbody>

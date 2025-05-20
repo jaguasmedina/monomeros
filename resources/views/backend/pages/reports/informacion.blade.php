@@ -82,15 +82,15 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>ID Solicitud</th>
-                                    <th>Identificador</th>
-                                    <th>Tipo</th>
-                                    <th>Nombre Completo</th>
-                                    <th>Empresa</th>
-                                    <th>Fecha Registro</th>
-                                    <th>Fecha Vigencia</th>
-                                    <th>Cargo</th>
-                                    <th>Estado</th>
+                                    <th>ID SOLICITUD</th>
+                                    <th>IDENTIFICADOR</th>
+                                    <th>TIPO</th>
+                                    <th>NOMBRE COMPLETO</th>
+                                    <th>EMPRESA</th>
+                                    <th>FECHA REGISTRO</th>
+                                    <th>FECHA VIGENCIA</th>
+                                    <th>CARGO</th>
+                                    <th>ESTADO</th>
                                 </tr>
                             </thead>
                             <tbody>

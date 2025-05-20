@@ -86,13 +86,13 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Solicitud ID</th>
-                                    <th>Título</th>
-                                    <th>Nombre</th>
-                                    <th>Tipo ID</th>
-                                    <th>Número ID</th>
-                                    <th>Favorable</th>
-                                    <th>Concepto No Favorable</th>
+                                    <th>SOLICITUD ID</th>
+                                    <th>TÍTULO</th>
+                                    <th>NOMBRE</th>
+                                    <th>TIPO ID</th>
+                                    <th>NÚMERO ID</th>
+                                    <th>FAVORABLE</th>
+                                    <th>CONCEPTO NO FAVORABLE</th>
                                 </tr>
                             </thead>
                             <tbody>

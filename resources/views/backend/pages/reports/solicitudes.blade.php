@@ -65,12 +65,12 @@
         <table id="dataTable" class="table table-bordered text-center">
             <thead class="bg-light text-capitalize">
                 <tr>
-                    <th>Razón Social</th>
-                    <th>Fecha</th>
-                    <th>Identificador</th>
-                    <th>Motivo</th>
-                    <th>Tipo Cliente</th>
-                    <th>Estado</th>
+                    <th>RAZÓN SOCIAL</th>
+                    <th>FECHA</th>
+                    <th>IDENTIFICADOR</th>
+                    <th>MOTIVO</th>
+                    <th>TIPO CLIENTE</th>
+                    <th>ESTADO</th>
                 </tr>
             </thead>
             <tbody>

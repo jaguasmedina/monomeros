@@ -40,13 +40,13 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="header-title float-left">{{ __('Solicitudes') }}</h4>
-
                     <div class="clearfix"></div>
                     <div class="data-tables">
                         @include('backend.layouts.partials.messages')
                         <table id="dataTable" class="text-center">
                             <thead class="bg-light text-capitalize">
                                 <tr>
+                                    <th width="10%">{{ __('ID') }}</th>
                                     <th width="15%">{{ __('Razón Social') }}</th>
                                     <th width="15%">{{ __('Fecha') }}</th>
                                     <th width="15%">{{ __('Identificador') }}</th>
@@ -56,16 +56,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              @foreach ($solicitudes as $solicitud)
-                               <tr onclick="window.location='{{ route('admin.analists.show', $solicitud->id) }}';" style="cursor: pointer;">
-                                    <td>{{ $solicitud->razon_social }}</td>
-                                    <td>{{ $solicitud->fecha_registro}}</td>
-                                    <td>{{ $solicitud->tipo_id.' '.$solicitud->identificador }}</td>
-                                    <td>{{ $solicitud->motivo }}</td>
-                                    <td>{{ $solicitud->tipo_cliente }}</td>
-                                    <th></th>
-                                   </tr>
-                               @endforeach
+                                @foreach ($solicitudes as $solicitud)
+                                    <tr onclick="window.location='{{ route('admin.analists.show', $solicitud->id) }}';" style="cursor: pointer;">
+                                        <td>{{ $solicitud->id }}</td>
+                                        <td>{{ $solicitud->razon_social }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($solicitud->fecha_registro)->format('Y-m-d') }}</td>
+                                        <td>{{ $solicitud->tipo_id }} {{ $solicitud->identificador }}</td>
+                                        <td>{{ $solicitud->motivo }}</td>
+                                        <td>{{ $solicitud->tipo_cliente }}</td>
+                                        <th></th>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

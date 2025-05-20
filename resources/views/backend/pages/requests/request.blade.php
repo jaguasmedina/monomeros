@@ -110,7 +110,7 @@
                                        value="{{ old('identificador') }}"
                                        style="text-transform: uppercase;"
                                        oninput="this.value = this.value.toUpperCase();"
-                                       maxlength="30"
+                                       maxlength="50"
                                        required>
                             </div>
                         </div>

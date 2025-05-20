@@ -47,11 +47,11 @@
                         <table id="dataTable" class="text-center">
                             <thead class="bg-light text-capitalize">
                                 <tr>
-                                    <th width="15%">{{ __('Razón Social') }}</th>
-                                    <th width="15%">{{ __('Fecha') }}</th>
-                                    <th width="15%">{{ __('Identificador') }}</th>
-                                    <th width="15%">{{ __('Motivo') }}</th>
-                                    <th width="15%">{{ __('Tipo Cliente') }}</th>
+                                    <th width="15%">{{ __('RAZÓN SOCIAL') }}</th>
+                                    <th width="15%">{{ __('FECHA') }}</th>
+                                    <th width="15%">{{ __('IDENTIFICADOR') }}</th>
+                                    <th width="15%">{{ __('MOTIVO') }}</th>
+                                    <th width="15%">{{ __('TIPO CLIENTE') }}</th>
                                     <th></th>
                                 </tr>
                             </thead>

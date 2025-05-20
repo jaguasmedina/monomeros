@@ -42,7 +42,7 @@
                 background-color: #ffffff !important;
             }
             table tr:nth-child(even) {
-                background-color: #3CB371 !important; /* MediumSeaGreen */
+                background-color: #59665a !important; /* MediumSeaGreen */
             }
 
             /* Asegúrate de que el texto contraste bien */

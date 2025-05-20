@@ -89,15 +89,15 @@
                             @foreach($solicitud->miembros as $index => $miembro)
                                 <div class="form-row member" data-miembro-id="{{ $miembro->id }}">
                                     <div class="form-group col-md-3">
-                                        <label>Título</label>
+                                        <label>TÍTULO</label>
                                         <input type="text" name="miembros[{{ $index }}][titulo]" value="{{ $miembro->titulo }}" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label>Nombre</label>
+                                        <label>NOMBRE</label>
                                         <input type="text" name="miembros[{{ $index }}][nombre]" value="{{ $miembro->nombre }}" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label>Tipo ID</label>
+                                        <label>TIPO ID</label>
                                         <select name="miembros[{{ $index }}][tipo_id]" class="form-control" required>
                                             <option value="cc" {{ $miembro->tipo_id=='cc'?'selected':'' }}>C.C.</option>
                                             <option value="ce" {{ $miembro->tipo_id=='ce'?'selected':'' }}>C.E.</option>
@@ -111,34 +111,34 @@
                                         </select>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label>Número ID</label>
+                                        <label>NÚMERO ID</label>
                                         <input type="text" name="miembros[{{ $index }}][numero_id]" value="{{ $miembro->numero_id }}" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <label>¿Favorable?</label>
+                                        <label>FAVORABLE?</label>
                                         <select name="miembros[{{ $index }}][favorable]" class="form-control favorable-select" required>
                                             <option value="si" {{ $miembro->favorable=='si'?'selected':'' }}>Sí</option>
                                             <option value="no" {{ $miembro->favorable=='no'?'selected':'' }}>No</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-4">
-                                        <label>Observaciones</label>
+                                        <label>OBSERVACIONES</label>
                                         <textarea name="miembros[{{ $index }}][observaciones]" class="form-control">{{ $miembro->observaciones ?? '' }}</textarea>
                                     </div>
                                     <div class="form-group col-md-12">
-                                        <button type="button" class="btn btn-danger btn-sm removeMemberBtn">Eliminar</button>
+                                        <button type="button" class="btn btn-danger btn-sm removeMemberBtn">ELIMINAR</button>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
 
                         <div id="conceptoContainer" class="form-group col-md-12 {{ $solicitud->miembros->contains(fn($m)=>$m->favorable=='no')?'':'hidden' }}">
-                            <label>Concepto de No Favorable</label>
+                            <label>CONCEPTO DE NO FAVORABLE</label>
                             <textarea name="concepto_no_favorable" class="form-control">{{ $solicitud->miembros->where('favorable','no')->first()?->concepto_no_favorable }}</textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">GUARDAR CAMBIOS</button>
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">CANCELAR</a>
                     </form>
                 </div>
             </div>

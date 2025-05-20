@@ -123,16 +123,16 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th>ID Solicitud</th>
-                                            <th>Razón Social</th>
-                                            <th>Tipo ID</th>
-                                            <th>Identificador</th>
-                                            <th>Fecha registro</th>
-                                            <th>Motivo</th>
-                                            <th>Estado</th>
-                                            <th>Concepto</th>
+                                            <th>ID SOLICITUD</th>
+                                            <th>RAZÓN SOCIAL</th>
+                                            <th>TIPO ID</th>
+                                            <th>IDENTIFICADOR</th>
+                                            <th>FECHA REGISTRO</th>
+                                            <th>MOTIVO</th>
+                                            <th>ESTADO</th>
+                                            <th>CONCEPTO</th>
                                             @if($showAcciones)
-                                                <th>Acciones</th>
+                                                <th>ACCIONES</th>
                                             @endif
                                         </tr>
                                     </thead>
