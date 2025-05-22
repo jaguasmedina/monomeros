@@ -1,26 +1,37 @@
 <?php
+
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Models\MovimientoSolicitud;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Support\Renderable;
+use App\Models\MovimientoSolicitud;
+use Illuminate\Support\Facades\Auth;
 
 class HistorialMovimientosController extends Controller
 {
-    public function index(Request $request)
+    public function __construct()
     {
-        // Asegurar que sólo superadmin tenga acceso
-        $this->middleware(['role:superadmin']);
+        // Solo superadmin (o el rol que necesites)
+        $this->middleware('role:superadmin');
+    }
 
-        // Tomar el número de la solicitud (ID) desde un input "numero_solicitud"
+    /**
+     * Mostrar historial de movimientos de una solicitud.
+     */
+    public function index(Request $request): Renderable
+    {
+        // Verifica permisos
+        $this->checkAuthorization(Auth::user(), ['admin.view']);
+
         $numeroSolicitud = $request->input('numero_solicitud');
         $movimientos = collect();
 
         if ($numeroSolicitud) {
-            // Filtrar movimientos por la solicitud_id (asumiendo que "número de la solicitud" es el ID de la tabla solicitudes)
             $movimientos = MovimientoSolicitud::with('solicitud')
                 ->where('solicitud_id', $numeroSolicitud)
-                ->orderBy('fecha_movimiento', 'asc')
+                // Orden cronológico ascendente por created_at
+                ->orderBy('created_at', 'asc')
                 ->get();
         }
 

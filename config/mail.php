@@ -35,14 +35,31 @@ return [
 
     'mailers' => [
         'smtp' => [
-            'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
-            'port' => env('MAIL_PORT', 587),
+            'transport'  => 'smtp',
+            'host'       => env('MAIL_HOST', 'smtp.mailgun.org'),
+            'port'       => env('MAIL_PORT', 587),
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
-            'auth_mode' => null,
+            'username'   => env('MAIL_USERNAME'),
+            'password'   => env('MAIL_PASSWORD'),
+            'timeout'    => null,
+            'auth_mode'  => null,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Opciones de stream SSL/TLS
+            |--------------------------------------------------------------------------
+            | Deshabilita la verificación del peer para entornos con certificados
+            | autofirmados o de desarrollo. En producción, deberías usar un
+            | certificado válido en tu servidor SMTP y eliminar estas opciones.
+            |
+            */
+            'stream' => [
+                'ssl' => [
+                    'allow_self_signed' => true,
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                ],
+            ],
         ],
 
         'ses' => [
@@ -59,12 +76,12 @@ return [
 
         'sendmail' => [
             'transport' => 'sendmail',
-            'path' => '/usr/sbin/sendmail -bs',
+            'path'      => '/usr/sbin/sendmail -bs',
         ],
 
         'log' => [
             'transport' => 'log',
-            'channel' => env('MAIL_LOG_CHANNEL'),
+            'channel'   => env('MAIL_LOG_CHANNEL'),
         ],
 
         'array' => [
@@ -85,7 +102,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'name'    => env('MAIL_FROM_NAME', 'Example'),
     ],
 
     /*

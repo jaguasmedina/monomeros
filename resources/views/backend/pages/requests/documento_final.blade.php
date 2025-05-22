@@ -3,14 +3,14 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Debida Diligencia N.º {{ $solicitud->id }}</title>
+    <title>Debida Diligencia N. {{ $solicitud->id }} – {{ now()->format('Y') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 2cm;
             color: #333;
-            background: #f7f7f7;
+            background: #fff;
         }
         .header {
             position: relative;
@@ -18,12 +18,8 @@
             margin-bottom: 20px;
         }
         .header img.logo {
-            height: 60px;
-            margin: 0 15px;
-        }
-        .header img.dynamic-qr {
-            height: 60px;
-            margin: 0 15px;
+            height: 80px;
+            margin-right: 20px;
         }
         .header img.static-qr {
             position: absolute;
@@ -35,49 +31,28 @@
             font-size: 18px;
             font-weight: bold;
             text-align: center;
-            margin: 10px 0 30px;
+            margin: 0 0 30px;
             color: #006837;
         }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
+        .content {
+            font-size: 14px;
+            line-height: 1.5;
             margin-bottom: 30px;
         }
-        .info-table th,
-        .info-table td {
-            text-align: left;
-            padding: 8px 12px;
+        .concept-section {
+            margin-bottom: 25px;
         }
-        .info-table th {
-            background: #e6f2e6;
-            width: 30%;
-        }
-        .concept-box {
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .concept-box.favorable {
-            background: #e6ffed;
-            border: 1px solid #8fd19e;
-        }
-        .concept-box.unfavorable {
-            background: #ffe6e6;
-            border: 1px solid #d19e9e;
-        }
-        .concept-box h3 {
-            margin-top: 0;
+        .concept-section h3 {
             font-size: 14px;
-            color: #333;
+            margin-bottom: 5px;
         }
-        .concept-box p {
+        .concept-section p {
             font-size: 16px;
             font-weight: bold;
-            margin: 8px 0;
+            margin: 0 0 10px;
         }
-        .concept-box small {
+        .concept-section small {
             display: block;
-            margin-top: 6px;
             font-size: 12px;
             color: #555;
         }
@@ -92,77 +67,53 @@
 <body>
     @php
         use App\Models\Admin;
-
-        // Nombre de los oficiales
+        // nombre de los oficiales
         $offS = Admin::where('username','sagrilaft')->value('name');
         $offP = Admin::where('username','ptee')->value('name');
-
-        // ¿SAGRILAFT dictó No Favorable?
+        // flag si SAGRILAFT dictó No Favorable
         $noFavS = strtoupper($solicitud->concepto_sagrilaft ?? '') === 'NO FAVORABLE';
     @endphp
 
     <div class="header">
-        {{-- Logo dinámico --}}
         @if($logo_existe)
-            <img src="data:image/png;base64,{{ $logo }}" class="logo" alt="Logo">
+            <img src="data:image/png;base64,{{ $logo }}" class="logo" alt="Logo Monómeros">
         @endif
-
-        {{-- QR dinámico antiguo (opcional) --}}
-        @if($rq_existe)
-            <img src="data:image/png;base64,{{ $rq }}" class="dynamic-qr" alt="QR Dinámico">
-        @endif
-
-        {{-- QR estático desde public/qr.png --}}
         @if(!empty($qr_img_static))
-            <img src="data:image/png;base64,{{ $qr_img_static }}" class="static-qr" alt="QR Estático">
+            <img src="data:image/png;base64,{{ $qr_img_static }}" class="static-qr" alt="QR Fuentes">
         @endif
     </div>
 
     <div class="title">
-        DEBIDA DILIGENCIA – CONTRAPARTE N.º {{ $solicitud->id }}
+        DEBIDA DILIGENCIA DE CONTRAPARTE N. {{ $solicitud->id }} – {{ now()->format('Y') }}
     </div>
 
-    <table class="info-table">
-        <tr>
-            <th>Fecha de Registro</th>
-            <td>{{ \Carbon\Carbon::parse($solicitud->fecha_registro)->format('d/m/Y') }}</td>
-        </tr>
-        <tr>
-            <th>Razón Social / Nombre</th>
-            <td>{{ $solicitud->nombre_completo ?? $solicitud->razon_social }}</td>
-        </tr>
-        <tr>
-            <th>Identificación</th>
-            <td>{{ $solicitud->tipo_id }} {{ $solicitud->identificador }}</td>
-        </tr>
-        <tr>
-            <th>Motivo de Solicitud</th>
-            <td>{{ $solicitud->motivo }}</td>
-        </tr>
-        <tr>
-            <th>Concepto Global</th>
-            <td>{{ strtoupper($solicitud->concepto ?? '—') }}</td>
-        </tr>
-    </table>
+    <div class="content">
+        Monómeros S.A. y sus empresas filiales, luego de realizar la Debida Diligencia de 
+        <strong>{{ $solicitud->nombre_completo ?? $solicitud->razon_social }}</strong>, 
+        identificada con <strong>{{ $solicitud->tipo_id }} {{ $solicitud->identificador }}</strong>,
+        emiten el siguiente concepto:
+        <strong>{{ strtoupper($solicitud->concepto ?? '—') }}</strong>.
+    </div>
 
-    {{-- Concepto SAGRILAFT --}}
-    <div class="concept-box {{ $noFavS ? 'unfavorable' : 'favorable' }}">
-        <h3>Concepto SAGRILAFT</h3>
+    <div class="concept-section">
+        <h3>Concepto de la revisión realizada para LA/FT/FPADM:</h3>
         <p>{{ strtoupper($solicitud->concepto_sagrilaft ?? '—') }}</p>
         <small>Oficial de Cumplimiento SAGRILAFT: {{ $offS }}</small>
     </div>
 
-    {{-- Concepto PTEE solo si SAGRILAFT no dictó No Favorable --}}
     @unless($noFavS)
-        <div class="concept-box {{ strtoupper($solicitud->concepto_ptee ?? '') === 'NO FAVORABLE' ? 'unfavorable' : 'favorable' }}">
-            <h3>Concepto PTEE</h3>
+        <div class="concept-section">
+            <h3>Concepto de la revisión realizada para antecedentes de corrupción y soborno transnacional:</h3>
             <p>{{ strtoupper($solicitud->concepto_ptee ?? '—') }}</p>
-            <small>Oficial de Cumplimiento PTEE: {{ $offP }}</small>
+            <small>Oficial de Cumplimiento C/ST: {{ $offP }}</small>
         </div>
     @endunless
 
     <div class="footer">
-        Documento generado el {{ now()->format('d/m/Y H:i') }}<br>
+        <br>Fecha Debida Diligencia: {{ \Carbon\Carbon::parse($solicitud->fecha_registro)->format('d/m/Y') }}<br>
+        NIT: 860.020.439-5<br>
+        Tel: (5) 3618650 – 3618100 – A.A 3205<br>
+        Vía 40 – Las Flores. Barranquilla, Atlántico.<br>
         Monómeros S.A. – Todos los derechos reservados
     </div>
 </body>

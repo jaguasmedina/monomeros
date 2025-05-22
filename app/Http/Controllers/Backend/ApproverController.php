@@ -17,36 +17,48 @@ use App\Mail\SolicitudStatusChanged;
 
 class ApproverController extends Controller
 {
+    public function __construct()
+    {
+        // Aplica autenticación y autorización para todos los métodos
+        $this->middleware('auth:admin');
+        $this->middleware(function ($request, $next) {
+            $this->checkAuthorization(Auth::user(), ['admin.view']);
+            return $next($request);
+        });
+    }
+
+    /**
+     * Bandeja SAGRILAFT (estado = APROBADOR_SAGRILAFT)
+     */
     public function index(): Renderable
     {
-        $this->checkAuthorization(Auth::user(), ['admin.view']);
-        // Bandeja SAGRILAFT: estado APROBADOR_SAGRILAFT
         $solicitudes = Solicitud::where('estado', 'APROBADOR_SAGRILAFT')->get();
-
         return view('backend.pages.approve.index', [
             'solicitudes' => $solicitudes,
             'vista'       => 1,
         ]);
     }
 
+    /**
+     * Bandeja PTEE (estado = APROBADOR_PTEE)
+     */
     public function index2(): Renderable
     {
-        $this->checkAuthorization(Auth::user(), ['admin.view']);
-        // Bandeja PTEE: estado APROBADOR_PTEE
         $solicitudes = Solicitud::where('estado', 'APROBADOR_PTEE')->get();
-
         return view('backend.pages.approve.index', [
             'solicitudes' => $solicitudes,
             'vista'       => 2,
         ]);
     }
 
+    /**
+     * Mostrar formulario de revisión, detectando la vista (1=SAGRILAFT, 2=PTEE)
+     */
     public function show(Request $request, $id): Renderable
     {
-        $this->checkAuthorization(Auth::user(), ['admin.view']);
         $solicitud = Solicitud::with('miembros')->findOrFail($id);
 
-        // Detecta si estamos en PTEE (cualquier ruta que empiece con admin.approver2)
+        // Detecta si la ruta es approver2.* para saber si es PTEE
         $vista = request()->routeIs('admin.approver2.*') ? 2 : 1;
 
         return view('backend.pages.approve.show', [
@@ -55,21 +67,23 @@ class ApproverController extends Controller
         ]);
     }
 
+    /**
+     * Procesar la decisión del revisor y avanzar estado, guardar conceptos,
+     * enviar notificación al creador, e insertar en tabla “informacion” si aplica.
+     */
     public function save(Request $request, $id): RedirectResponse
     {
-        $this->checkAuthorization(Auth::user(), ['admin.view']);
-
-        // Tomamos primero el input "vista", si no existe tomamos el query param o 1 por defecto
+        // ¿Quién nos llamó? 1=SAGRILAFT, 2=PTEE
         $vista = (int) $request->input('vista', $request->query('vista', 1));
         Log::debug("ApproverController::save - Vista recibida", ['vista' => $vista]);
 
-        // Inicializamos los valores por defecto
+        // Valores por defecto
         $concepto_sagrilaft = 'FAVORABLE';
         $concepto_ptee      = 'FAVORABLE';
         $concepto           = 'FAVORABLE';
         $motivoRechazo      = null;
 
-        // Procesamos los miembros: los borramos y volvemos a insertar
+        // Borrar e insertar miembros según el formulario
         if ($request->has('miembros') && is_array($request->miembros)) {
             Miembro::where('solicitud_id', $id)->delete();
             foreach ($request->miembros as $miembroData) {
@@ -82,7 +96,6 @@ class ApproverController extends Controller
                     'favorable'             => $miembroData['favorable'],
                     'concepto_no_favorable' => $request->concepto_no_favorable,
                 ]);
-                // Si alguno es "no", marcamos rechazo
                 if ($miembroData['favorable'] === 'no') {
                     $motivoRechazo = $request->concepto_no_favorable ?? 'No especificado';
                     if ($vista === 1) {
@@ -94,25 +107,25 @@ class ApproverController extends Controller
             }
         }
 
-        // Establecemos el nuevo estado
+        // Determinar nuevo estado según flujo y conceptos
         if ($vista === 1 && $concepto_sagrilaft === 'NO FAVORABLE') {
-            // Si SAGRILAFT rechaza, termina el flujo directamente
+            // Si SAGRILAFT rechaza, se entrega de inmediato
             $estado   = 'ENTREGADO';
             $concepto = 'NO FAVORABLE';
         } elseif ($vista === 1) {
-            // Flujo normal: pasa a PTEE
+            // Si SAGRILAFT aprueba, pasa a PTEE
             $estado = 'APROBADOR_PTEE';
         } else {
-            // Vista 2 (PTEE): siempre entrega
+            // En PTEE siempre se entrega
             $estado = 'ENTREGADO';
         }
 
-        // Si alguno de los conceptos es NO FAVORABLE, el global también lo es
+        // Concepto global: si alguno es NO FAVORABLE, el global también
         if ($concepto_sagrilaft === 'NO FAVORABLE' || $concepto_ptee === 'NO FAVORABLE') {
             $concepto = 'NO FAVORABLE';
         }
 
-        // Actualizamos la solicitud
+        // Actualizar la solicitud en BD
         Solicitud::where('id', $id)->update([
             'motivo_rechazo'     => $motivoRechazo,
             'estado'             => $estado,
@@ -121,14 +134,18 @@ class ApproverController extends Controller
             'concepto'           => $concepto,
         ]);
 
-        // Recargamos la solicitud actualizada
+        // Recargar solicitud con relación al admin creador
         $solicitud = Solicitud::with('admin')->findOrFail($id);
 
-        // Enviamos notificación por correo al creador si cambió de estado
-        Mail::to($solicitud->admin->email)
-            ->send(new SolicitudStatusChanged($solicitud));
+        // Enviar notificación por correo al usuario creador si cambió de estado
+        try {
+            Mail::to($solicitud->admin->email)
+                ->send(new SolicitudStatusChanged($solicitud));
+        } catch (\Exception $e) {
+            Log::error("Error enviando correo de notificación: {$e->getMessage()}");
+        }
 
-        // Si quedó ENTREGADO, insertamos o actualizamos en "informacion"
+        // Si quedó ENTREGADO, actualizar o insertar en tabla "informacion"
         if ($estado === 'ENTREGADO') {
             DB::table('informacion')->updateOrInsert(
                 ['identificador' => $solicitud->identificador],
@@ -148,7 +165,7 @@ class ApproverController extends Controller
             );
         }
 
-        // Redirect según la vista
+        // Redireccionar a la bandeja correspondiente con mensaje de éxito
         if ($vista === 2) {
             return redirect()
                 ->route('admin.approver2.index')

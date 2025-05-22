@@ -80,6 +80,11 @@
         color: #00B14F;
         font-weight: bold;
     }
+
+    .table-responsive table {
+    text-transform: uppercase;
+    }
+
 </style>
 @endsection
 
