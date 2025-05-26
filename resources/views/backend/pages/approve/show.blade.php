@@ -158,7 +158,7 @@
                         @endif
 
                         <input type="hidden" name="vista" value="{{ $vista }}">
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        
                         </form>
                         
                 </div>
