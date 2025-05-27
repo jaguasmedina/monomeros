@@ -24,6 +24,8 @@
                   action="{{ route('admin.analists.save', $solicitud->id) }}"
                   method="POST">
                 @csrf
+                
+
 
                 {{-- Encabezado de datos --}}
                 <div class="form-row mb-3">
@@ -155,29 +157,36 @@
                     @endforeach
                 </div>
 
-                            {{-- Dentro del form principal --}}
-            <div class="form-row mt-3">
-                <div class="col">
-                    <button type="submit" class="btn btn-primary">
-                        PROCESAR
-                    </button>
+                                            {{-- Campo oculto que define la acción del botón --}}
+                        <input type="hidden" name="accion" id="accion" value="procesar">
 
-                    <a href="{{ route('admin.analists.index') }}"
-                    class="btn btn-secondary">
-                        Cancelar
-                    </a>
-                </div>
-            </div>
-            </form> <!-- cierre del form principal -->
+                        {{-- Botones de acción unificados --}}
+                        <div class="form-row mt-3">
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary"
+                                        onclick="document.getElementById('accion').value='procesar'">
+                                    PROCESAR
+                                </button>
 
-            {{-- Fuera del form principal: nuevo botón independiente --}}
-            <form action="{{ route('admin.analists.savenf', $solicitud->id) }}"
-                method="POST" class="mt-2">
-            @csrf
-            <button type="submit" class="btn btn-warning">
-                Regresar por Documentación
-            </button>
-            </form>
+                                <button type="submit" class="btn btn-warning"
+                                        onclick="document.getElementById('accion').value='documentacion'">
+                                    Regresar por Documentación
+                                </button>
+
+                                <button type="submit" class="btn btn-info"
+                                        onclick="document.getElementById('accion').value='borrador'">
+                                    Guardar en Borrador
+                                </button>
+
+                                <a href="{{ route('admin.analists.index') }}"
+                                class="btn btn-secondary">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </div>
+                        </form> <!-- cierre del único form -->
+          
+
 
 
         </div>
