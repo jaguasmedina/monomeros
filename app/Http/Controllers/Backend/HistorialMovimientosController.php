@@ -15,8 +15,9 @@ class HistorialMovimientosController extends Controller
      */
     public function __construct()
     {
-        // Sólo superadmin puede ver el historial
-        $this->middleware(['role:superadmin']);
+        // Sólo superadmin y Analista pueden ver el historial
+        $this->middleware(['role:superadmin|analista']);
+
     }
 
     /**

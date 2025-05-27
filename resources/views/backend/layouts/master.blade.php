@@ -5,9 +5,17 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>@yield('title', 'Laravel Role Admin')</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
+
+    <!-- Bootstrap CSS / JS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Partials CSS -->
     @include('backend.layouts.partials.styles')
     @yield('styles')
+
     <style>
         /* Estilo global para inputs, selects y textareas con la clase form-control */
         input.form-control,
@@ -38,17 +46,16 @@
             border: 2px solid #052b0e !important;
         }
         /* Zebra striping alternado (fondo claro y oscuro) */
-            table tr:nth-child(odd) {
-                background-color: #ffffff !important;
-            }
-            table tr:nth-child(even) {
-                background-color: #59665a !important; /* MediumSeaGreen */
-            }
-
-            /* Asegúrate de que el texto contraste bien */
-            table tr:nth-child(even) td {
-                color: #000 !important;
-            }
+        table tr:nth-child(odd) {
+            background-color: #ffffff !important;
+        }
+        table tr:nth-child(even) {
+            background-color: #59665a !important; /* tono menos intenso que el anterior */
+        }
+        /* Asegúrate de que el texto contraste bien */
+        table tr:nth-child(even) td {
+            color: #000 !important;
+        }
         /* ==========================
            Ajuste ancho select DataTables
         ========================== */
@@ -69,23 +76,28 @@
             <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.
         </p>
     <![endif]-->
+
     <!-- preloader area start -->
     <div id="preloader">
         <div class="loader"></div>
     </div>
     <!-- preloader area end -->
+
     <!-- page container area start -->
     <div class="page-container">
         @include('backend.layouts.partials.sidebar')
+
         <!-- main content area start -->
         <div class="main-content">
             @include('backend.layouts.partials.header')
             @yield('admin-content')
         </div>
         <!-- main content area end -->
+
         @include('backend.layouts.partials.footer')
     </div>
     <!-- page container area end -->
+
     @include('backend.layouts.partials.offsets')
     @include('backend.layouts.partials.scripts')
     @yield('scripts')
