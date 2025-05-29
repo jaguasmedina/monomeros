@@ -55,25 +55,22 @@ class ApproverController extends Controller
         ]);
     }
 
+
     public function save(Request $request, $id): RedirectResponse
     {
         $this->checkAuthorization(Auth::user(), ['admin.view']);
-
-        // ¿Quién llamó? 1=SAGRILAFT, 2=PTEE
+    
         $vista = (int) $request->input('vista', $request->query('vista', 1));
         Log::debug("ApproverController::save - Vista recibida", ['vista' => $vista]);
-
-        // Cargo la solicitud antes de cambiar nada
+    
         $solOriginal = Solicitud::findOrFail($id);
         $estadoAnterior = $solOriginal->estado;
-
-        // Variables por defecto
+    
         $concepto_sagrilaft = 'FAVORABLE';
         $concepto_ptee      = 'FAVORABLE';
         $concepto           = 'FAVORABLE';
         $motivoRechazo      = null;
-
-        // Reemplazo de miembros
+    
         if ($request->has('miembros') && is_array($request->miembros)) {
             Miembro::where('solicitud_id', $id)->delete();
             foreach ($request->miembros as $miData) {
@@ -86,6 +83,7 @@ class ApproverController extends Controller
                     'favorable'             => $miData['favorable'],
                     'concepto_no_favorable' => $request->concepto_no_favorable,
                 ]);
+    
                 if ($miData['favorable'] === 'no') {
                     $motivoRechazo = $request->concepto_no_favorable ?? 'No especificado';
                     if ($vista === 1) {
@@ -96,26 +94,20 @@ class ApproverController extends Controller
                 }
             }
         }
-
-        // Lógica de estado según vista y conceptos
+    
         if ($vista === 1 && $concepto_sagrilaft === 'NO FAVORABLE') {
-            // Si SAGRILAFT rechaza, finaliza
             $estado = 'ENTREGADO';
             $concepto = 'NO FAVORABLE';
         } elseif ($vista === 1) {
-            // Pasa a PTEE
             $estado = 'APROBADOR_PTEE';
         } else {
-            // PTEE siempre entrega
             $estado = 'ENTREGADO';
         }
-
-        // Si alguno es NO FAVORABLE, global = NO FAVORABLE
+    
         if ($concepto_sagrilaft === 'NO FAVORABLE' || $concepto_ptee === 'NO FAVORABLE') {
             $concepto = 'NO FAVORABLE';
         }
-
-        // Actualizamos la solicitud
+    
         Solicitud::where('id', $id)->update([
             'motivo_rechazo'     => $motivoRechazo,
             'estado'             => $estado,
@@ -123,8 +115,7 @@ class ApproverController extends Controller
             'concepto_ptee'      => $concepto_ptee,
             'concepto'           => $concepto,
         ]);
-
-        // **1) Registramos el movimiento de estado**
+    
         MovimientoSolicitud::create([
             'solicitud_id'    => $id,
             'estado_anterior' => $estadoAnterior,
@@ -134,13 +125,13 @@ class ApproverController extends Controller
                                     : 'Revisión PTEE: '.$concepto_ptee,
             'fecha_movimiento'=> now(),
         ]);
-
-        // **2) Notificamos por correo al creador si cambió el estado**
+    
         $solicitud = Solicitud::with('admin')->findOrFail($id);
-        Mail::to($solicitud->admin->email)
-            ->send(new SolicitudStatusChanged($solicitud));
-
-        // **3) Si entregado, actualizamos/inserto en “informacion”**
+    
+        // Comentado temporalmente por errores de TLS en el envío
+        // Mail::to($solicitud->admin->email)
+        //     ->send(new SolicitudStatusChanged($solicitud));
+    
         if ($estado === 'ENTREGADO') {
             DB::table('informacion')->updateOrInsert(
                 ['identificador' => $solicitud->identificador],
@@ -149,9 +140,7 @@ class ApproverController extends Controller
                     'nombre_completo' => $solicitud->nombre_completo ?? $solicitud->razon_social,
                     'empresa'         => $solicitud->razon_social,
                     'fecha_registro'  => $solicitud->fecha_registro,
-                    'fecha_vigencia'  => Carbon::parse($solicitud->fecha_registro)
-                                           ->addYears(2)
-                                           ->format('Y-m-d'),
+                    'fecha_vigencia'  => Carbon::parse($solicitud->fecha_registro)->addYears(2)->format('Y-m-d'),
                     'cargo'           => $solicitud->tipo_cliente,
                     'estado'          => $solicitud->concepto,
                     'created_at'      => now(),
@@ -159,16 +148,12 @@ class ApproverController extends Controller
                 ]
             );
         }
-
-        // Redirección según vista
-        if ($vista === 2) {
-            return redirect()
-                ->route('admin.approver2.index')
-                ->with('success', 'Decisión registrada. Volviendo a PTEE.');
-        }
-
+    
         return redirect()
-            ->route('admin.approver.index')
-            ->with('success', 'Decisión registrada. Volviendo a SAGRILAFT.');
+            ->route($vista === 2 ? 'admin.approver2.index' : 'admin.approver.index')
+            ->with('success', 'Decisión registrada. Volviendo a ' . ($vista === 2 ? 'PTEE' : 'SAGRILAFT') . '.');
     }
+    
+
+
 }
