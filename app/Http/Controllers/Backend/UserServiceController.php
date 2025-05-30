@@ -57,10 +57,7 @@ class UserServiceController extends Controller
         return view('backend.pages.requests.request');
     }
 
-   
-        /**
-     * 2) Mostrar reporte de Solicitudes con filtro por estado real
-     */
+    // 2) Mostrar reporte de Solicitudes con filtro por estado real
     public function report(Request $request): Renderable
     {
         $this->authorize('admin.view');
@@ -98,10 +95,7 @@ class UserServiceController extends Controller
         ));
     }
 
-
-    /**
-     * 3) Exportar reporte de Solicitudes a Excel
-     */
+    // 3) Exportar reporte de Solicitudes a Excel
     public function exportReport(Request $request)
     {
         $this->authorize('admin.view');
@@ -166,7 +160,9 @@ class UserServiceController extends Controller
         $archivosPaths = [];
         if ($request->tipo_persona === 'juridica' && $request->hasFile('archivos')) {
             foreach ($request->file('archivos') as $archivo) {
-                $path = $archivo->store('solicitudes/' . date('Y/m'), 'public');
+                $originalName = str_replace(' ', '_', $archivo->getClientOriginalName());
+                $filename = time() . '_' . $originalName;
+                $path = $archivo->storeAs('solicitudes/' . date('Y/m'), $filename, 'public');
                 $archivosPaths[] = $path;
             }
         }
@@ -212,17 +208,30 @@ class UserServiceController extends Controller
             'identificador'   => 'required|string|max:50',
             'motivo'          => 'required|string',
             'nombre_completo' => 'nullable|string|max:255',
-            'archivo'         => 'nullable|file|mimes:pdf|max:2048',
+            'archivos.*'      => 'nullable|file|mimes:pdf|max:2048',
             'tipo_cliente'    => 'nullable|string|in:proveedor,cliente,visitante,contratista',
         ]);
 
         $solicitud = Solicitud::findOrFail($request->id);
 
-        if ($request->hasFile('archivo')) {
+        // Manejar múltiples archivos
+        if ($request->hasFile('archivos')) {
             if ($solicitud->archivo) {
-                Storage::disk('public')->delete($solicitud->archivo);
+                $previos = json_decode($solicitud->archivo, true);
+                if (is_array($previos)) {
+                    foreach ($previos as $archivoPrevio) {
+                        Storage::disk('public')->delete($archivoPrevio);
+                    }
+                }
             }
-            $solicitud->archivo = $request->file('archivo')->store('solicitudes', 'public');
+            $archivosPaths = [];
+            foreach ($request->file('archivos') as $archivo) {
+                $originalName = str_replace(' ', '_', $archivo->getClientOriginalName());
+                $filename = time() . '_' . $originalName;
+                $path = $archivo->storeAs('solicitudes/' . date('Y/m'), $filename, 'public');
+                $archivosPaths[] = $path;
+            }
+            $solicitud->archivo = json_encode($archivosPaths);
         }
 
         $solicitud->update([
