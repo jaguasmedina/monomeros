@@ -24,8 +24,6 @@
                   action="{{ route('admin.analists.save', $solicitud->id) }}"
                   method="POST">
                 @csrf
-                
-
 
                 {{-- Encabezado de datos --}}
                 <div class="form-row mb-3">
@@ -59,13 +57,17 @@
                     </div>
                 </div>
 
-                {{-- Motivo y adjuntos --}}
+                {{-- Motivo --}}
                 <div class="form-row mb-3">
-                    <div class="form-group col-md-8">
+                    <div class="form-group col-md-12">
                         <label>Motivo</label>
                         <textarea readonly class="form-control">{{ $solicitud->motivo }}</textarea>
                     </div>
-                    <div class="form-group col-md-4">
+                </div>
+
+                {{-- Descargar documento(s) --}}
+                <div class="form-row mb-3">
+                    <div class="form-group col-md-12">
                         <label>Descargar Documento</label><br>
                         @php
                             $paths = [];
@@ -77,7 +79,7 @@
                         @if(count($paths))
                             @foreach($paths as $path)
                                 <a href="{{ asset('storage/' . trim($path,'"')) }}"
-                                   class="btn btn-success btn-sm" target="_blank">
+                                   class="btn btn-success btn-sm mb-1" target="_blank">
                                     <i class="fa fa-download"></i>
                                     {{ basename($path) }}
                                 </a>
@@ -88,7 +90,7 @@
                     </div>
                 </div>
 
-                {{-- botón Agregar Miembro --}}
+                {{-- Botón Agregar Miembro --}}
                 <div class="form-row mb-3">
                     <div class="col-12">
                         <button type="button" id="addMemberBtn"
@@ -118,14 +120,14 @@
                                 <label>TIPO ID</label>
                                 <select name="miembros[{{ $index }}][tipo_id]"
                                         class="form-control" required>
-                                    <option value="cc"           {{ $miembro->tipo_id=='cc'?'selected':'' }}>C.C.</option>
-                                    <option value="ce"           {{ $miembro->tipo_id=='ce'?'selected':'' }}>C.E.</option>
-                                    <option value="pa"           {{ $miembro->tipo_id=='pa'?'selected':'' }}>P.A.</option>
-                                    <option value="ppt"          {{ $miembro->tipo_id=='ppt'?'selected':'' }}>PPT</option>
-                                    <option value="pep"          {{ $miembro->tipo_id=='pep'?'selected':'' }}>PEP</option>
-                                    <option value="ti"           {{ $miembro->tipo_id=='ti'?'selected':'' }}>TI</option>
-                                    <option value="rc"           {{ $miembro->tipo_id=='rc'?'selected':'' }}>RC</option>
-                                    <option value="nit"          {{ $miembro->tipo_id=='nit'?'selected':'' }}>NIT</option>
+                                    <option value="cc" {{ $miembro->tipo_id=='cc'?'selected':'' }}>C.C.</option>
+                                    <option value="ce" {{ $miembro->tipo_id=='ce'?'selected':'' }}>C.E.</option>
+                                    <option value="pa" {{ $miembro->tipo_id=='pa'?'selected':'' }}>P.A.</option>
+                                    <option value="ppt" {{ $miembro->tipo_id=='ppt'?'selected':'' }}>PPT</option>
+                                    <option value="pep" {{ $miembro->tipo_id=='pep'?'selected':'' }}>PEP</option>
+                                    <option value="ti" {{ $miembro->tipo_id=='ti'?'selected':'' }}>TI</option>
+                                    <option value="rc" {{ $miembro->tipo_id=='rc'?'selected':'' }}>RC</option>
+                                    <option value="nit" {{ $miembro->tipo_id=='nit'?'selected':'' }}>NIT</option>
                                     <option value="internacional" {{ $miembro->tipo_id=='internacional'?'selected':'' }}>INTERNACIONAL</option>
                                 </select>
                             </div>
@@ -157,38 +159,44 @@
                     @endforeach
                 </div>
 
-                                            {{-- Campo oculto que define la acción del botón --}}
-                        <input type="hidden" name="accion" id="accion" value="procesar">
+                {{-- Campo Observaciones al devolver --}}
+                <div id="motivoRechazoContainer" class="form-group mt-3 hidden">
+                    <label for="motivo_rechazo">Observaciones (motivo de devolución) *</label>
+                    <textarea name="motivo_rechazo"
+                              id="motivo_rechazo"
+                              class="form-control"
+                              rows="3">{{ old('motivo_rechazo', $solicitud->motivo_rechazo ?? '') }}</textarea>
+                </div>
 
-                        {{-- Botones de acción unificados --}}
-                        <div class="form-row mt-3">
-                            <div class="col">
-                                <button type="submit" class="btn btn-primary"
-                                        onclick="document.getElementById('accion').value='procesar'">
-                                    PROCESAR
-                                </button>
+                {{-- Campo oculto que define la acción --}}
+                <input type="hidden" name="accion" id="accion" value="procesar">
 
-                                <button type="submit" class="btn btn-warning"
-                                        onclick="document.getElementById('accion').value='documentacion'">
-                                    Regresar por Documentación
-                                </button>
+                {{-- Botones de acción unificados --}}
+                <div class="form-row mt-3">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary"
+                                onclick="hideMotivo(); document.getElementById('accion').value='procesar'">
+                            PROCESAR
+                        </button>
 
-                                <button type="submit" class="btn btn-info"
-                                        onclick="document.getElementById('accion').value='borrador'">
-                                    Guardar en Borrador
-                                </button>
+                        <button type="submit" class="btn btn-warning"
+                                onclick="showMotivo(); document.getElementById('accion').value='documentacion'">
+                            Regresar por Documentación
+                        </button>
 
-                                <a href="{{ route('admin.analists.index') }}"
-                                class="btn btn-secondary">
-                                    Cancelar
-                                </a>
-                            </div>
-                        </div>
-                        </form> <!-- cierre del único form -->
-          
+                        <button type="submit" class="btn btn-info"
+                                onclick="hideMotivo(); document.getElementById('accion').value='borrador'">
+                            Guardar en Borrador
+                        </button>
 
+                        <a href="{{ route('admin.analists.index') }}"
+                           class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
 
-
+            </form>
         </div>
     </div>
 </div>
@@ -198,23 +206,39 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+    // Motivo devolución
+    const motivoContainer = document.getElementById('motivoRechazoContainer');
+    const motivoTextarea  = document.getElementById('motivo_rechazo');
+    window.showMotivo = function() {
+        motivoContainer.classList.remove('hidden');
+        motivoTextarea.required = true;
+    };
+    window.hideMotivo = function() {
+        motivoContainer.classList.add('hidden');
+        motivoTextarea.required = false;
+    };
+    hideMotivo();
+
+    // Miembros dinámicos
     const maxMembers = 100;
     let memberCount = document.querySelectorAll("#membersContainer .member").length;
     const container = document.getElementById("membersContainer");
     const addBtn = document.getElementById("addMemberBtn");
-    const conceptoContainer = document.getElementById("conceptoContainer");
 
     function updateButtons() {
         addBtn.disabled = container.querySelectorAll(".member").length >= maxMembers;
     }
+
     function bindFavorable() {
-        document.querySelectorAll(".favorable-select")
-            .forEach(sel => sel.addEventListener("change", () => {
+        document.querySelectorAll(".favorable-select").forEach(sel => {
+            sel.addEventListener("change", () => {
                 const anyNo = Array.from(document.querySelectorAll(".favorable-select"))
                     .some(s => s.value === "no");
-                conceptoContainer?.classList.toggle("hidden", !anyNo);
-            }));
+                // aquí podrías mostrar algo si hay “no”
+            });
+        });
     }
+
     function addMember() {
         if (container.querySelectorAll(".member").length >= maxMembers) return;
         memberCount++;
@@ -259,7 +283,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <textarea name="miembros[${memberCount}][observaciones]" class="form-control"></textarea>
             </div>
             <div class="form-group col-md-12">
-                <button type="button" class="btn btn-danger btn-sm removeMemberBtn">Eliminar</button>
+                <button type="button" class="btn btn-danger btn-sm removeMemberBtn">
+                    Eliminar
+                </button>
             </div>
         `;
         container.appendChild(div);
@@ -267,8 +293,8 @@ document.addEventListener("DOMContentLoaded", () => {
         updateButtons();
     }
 
-    // Eventos
     addBtn.addEventListener("click", addMember);
+
     container.addEventListener("click", e => {
         if (e.target.classList.contains("removeMemberBtn")) {
             e.target.closest(".member").remove();
