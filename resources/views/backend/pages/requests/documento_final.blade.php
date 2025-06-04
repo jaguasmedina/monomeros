@@ -67,11 +67,15 @@
 <body>
     @php
         use App\Models\Admin;
-        // nombre de los oficiales
+        // Nombre de los oficiales
         $offS = Admin::where('username','sagrilaft')->value('name');
         $offP = Admin::where('username','ptee')->value('name');
-        // flag si SAGRILAFT dictó No Favorable
+        // Flag si SAGRILAFT dictó No Favorable
         $noFavS = strtoupper($solicitud->concepto_sagrilaft ?? '') === 'NO FAVORABLE';
+        // Si SAGRILAFT fue no favorable, forzamos el concepto de PTEE a NO FAVORABLE
+        $conceptPTEE = $noFavS 
+                       ? 'NO FAVORABLE' 
+                       : (strtoupper($solicitud->concepto_ptee ?? '') ?: '—');
     @endphp
 
     <div class="header">
@@ -101,13 +105,11 @@
         <small>Oficial de Cumplimiento SAGRILAFT: {{ $offS }}</small>
     </div>
 
-    @unless($noFavS)
-        <div class="concept-section">
-            <h3>Concepto de la revisión realizada para antecedentes de corrupción y soborno transnacional:</h3>
-            <p>{{ strtoupper($solicitud->concepto_ptee ?? '—') }}</p>
-            <small>Oficial de Cumplimiento C/ST: {{ $offP }}</small>
-        </div>
-    @endunless
+    <div class="concept-section">
+        <h3>Concepto de la revisión realizada para antecedentes de corrupción y soborno transnacional:</h3>
+        <p>{{ $conceptPTEE }}</p>
+        <small>Oficial de Cumplimiento C/ST: {{ $offP }}</small>
+    </div>
 
     <div class="footer">
         <br>Fecha Debida Diligencia: {{ \Carbon\Carbon::parse($solicitud->fecha_registro)->format('d/m/Y') }}<br>
