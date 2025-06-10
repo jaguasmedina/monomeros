@@ -1,0 +1,23 @@
+
+**** Trace file opened at 2025-06-09 14:26:41.296235 UTC-05:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /var/www/client3/web22/web, Program: php
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.18.0-553.50.1.el8_10.x86_64
+ Hostname: midweapl01.monomeros.com.co, IP address: 172.16.30.138, IPv6 address: 
+
+2025-06-09 14:26:41.296282 [140525299223680] >> Info entry
+	Searching for config file sapnwrfc.ini
+
+
+**** Trace file opened at 2025-06-09 14:26:41.296315 UTC-05:00 (GMT), Encoding UTF-8
+NW RFC Library: SDK variant, Release 750 Patch Level 5, Compiled on Aug 20 2019 21:18:37
+ CPIC library: 753.2019.02.22 version 3, NI library: 40, Kernel Release: 753 Patch Level 500
+ Current working directory: /var/www/client3/web22/web, Program: php
+ Hardware: AMD/Intel x86_64 with Linux x86_64, Operating_system: Linux 4.18.0-553.50.1.el8_10.x86_64
+ Hostname: midweapl01.monomeros.com.co, IP address: 172.16.30.138, IPv6 address: 
+
+2025-06-09 14:26:41.296329 [140525299223680] >> Error entry
+	The UUID daemon (uuidd) is not active.
+Please ask your system administrator to activate uuidd according to SAP note 1391070.
+

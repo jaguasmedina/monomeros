@@ -1,178 +1,207 @@
 @extends('backend.layouts.master')
 
-@section('title', 'Crear Solicitud')
+@section('title', 'Editar Solicitud')
 
 @section('styles')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-    .hidden { display: none; }
-</style>
 @endsection
 
 @section('admin-content')
 <div class="page-title-area">
-    <div class="row align-items-center">
-        <div class="col-sm-6">
-            <h4 class="page-title">Editar Solicitud</h4>
-        </div>
-    </div>
+    <h4 class="page-title">Editar Solicitud</h4>
 </div>
 <div class="main-content-inner">
-    <div class="row">
-        <div class="col-12 mt-5">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="header-title">Nueva Solicitud</h4>
-                    @include('backend.layouts.partials.messages')
-                    @if (session('solicitud_id'))
-                        <div class="alert alert-info">
-                            ID de la solicitud creada: <h1></h1><strong>{!! session('solicitud_id') !!}</strong></h1>
-                        </div>
-                    @endif
-                    <form action="{{ route('admin.service.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="form-row">
-                            <div class="form-group col-md-12 col-sm-12">
-                                <label for="tipo_persona">Tipo de Persona</label>
-                                <select id="tipo_persona" name="tipo_persona" class="form-control select2">
-                                    <option value="natural" @selected($solicitud->tipo_persona == 'natural')>Persona Natural</option>
-                                    <option value="juridica" @selected($solicitud->tipo_persona == 'juridica')>Persona JurÃ­dica</option>
-                                </select>
-                            </div>
-                        </div>
-                        <input type="hidden" name="id" id="id" value="{{ $solicitud->id }}">
-                        <div class="form-row">
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Fecha</label>
-                                    <input type="date" name="fecha_registro" class="form-control" id="fecha_registro" 
-       value="{{ old('fecha_registro', $solicitud->fecha_registro) }}" 
-       required max="{{ date('Y-m-d') }}">
-                                </div>
-                                <div class="form-group  col-md-6 col-sm-12">
-                                    <label>RazÃ³n Social</label>
-                                    <input type="text" required  name="razon_social" id="razon_social" class="form-control" placeholder="RazÃ³n Social" value="{{ $solicitud->razon_social }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
-                                </div>
-                        </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6 col-sm-12">
-                                    <label>Tipo de ID</label>
-                                    <select name="tipo_id" id="tipo_id" class="form-control select2">
-                                        <option value="cc" @selected($solicitud->tipo_documento == 'cc')>C.C.</option>
-                                        <option value="ce" @selected($solicitud->tipo_documento == 'ce')>C.E.</option>
-                                        <option value="pa" @selected($solicitud->tipo_documento == 'pa')>P.A.</option>
-                                        <option value="ppt" @selected($solicitud->tipo_documento == 'ppt')>PPT</option>
-                                        <option value="pep" @selected($solicitud->tipo_documento == 'pep')>PEP</option>
-                                        <option value="ti" @selected($solicitud->tipo_documento == 'ti')>TI</option>
-                                        <option value="rc" @selected($solicitud->tipo_documento == 'rc')>RC</option>
-                                    </select>
-                                </div>
-                                <div class="form-group  col-md-6 col-sm-12">
-                                    <label>NÃºmero de ID</label>
-                                    <input type="text" required  name="identificador" placeholder="Identificador" value="{{ $solicitud->identificador }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();" class="form-control" maxlength="50">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group  col-md-12 col-sm-12">
-                                    <label>Motivo</label>
-                                    <textarea name="motivo" required  class="form-control" placeholder="Motivo" value="{{  $solicitud->motivo  }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">{{  $solicitud->motivo  }}</textarea>
-                                </div>
-                            </div>
+    <div class="card mt-4">
+        <div class="card-body">
+            @include('backend.layouts.partials.messages')
 
-                            <div class="form-row">
-
-                                    <div class="form-group col-md-6 col-sm-12" id="persona_natural">
-                                        <label>Nombre Completo</label>
-                                        <input type="text" class="form-control" name="nombre_completo" id="nombre_completo" placeholder="Nombre Completo" value="{{  $solicitud->nombre_completo  }}" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();">
-                                    </div>
-                                    <div class="form-group col-md-4 col-sm-12">
-                                        <label>Descargar Documento</label>
-                                        @if($solicitud->archivo)
-                                            <a href="{{ asset('storage/' . $solicitud->archivo) }}" class="btn btn-success" target="_blank">
-                                                <i class="fa fa-download"></i> Descargar PDF
-                                            </a>
-                                        @else
-                                            <p>No hay documento adjunto</p>
-                                        @endif
-                                    </div>
-
-                                    <div class="form-group col-md-6 col-sm-12 hidden" id="persona_juridica" class="persona-section ">
-                                        <label>Subir Archivo</label>
-                                        <input type="file" name="archivo" class="form-control">
-                                    </div>
-
-                                <div class="form-group  col-md-6 col-sm-12">
-                                    <label>Tipo</label>
-                                    <select name="tipo_cliente" id="tipo_cliente" class="form-control select2">
-                                        <option value="contratista" @selected($solicitud->tipo_cliente == 'contratista')>Contratista</option>
-                                        <option value="visitante" @selected($solicitud->tipo_cliente == 'visitante')>Visitante</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                        <button type="submit" class="btn btn-primary">Guardar cambio</button>
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
-                    </form>
+            {{-- Mostrar motivo de devolución si existe --}}
+            @if($solicitud->motivo_rechazo)
+                <div class="alert alert-warning">
+                    <strong>Motivo de devolución:</strong>
+                    <p>{{ $solicitud->motivo_rechazo }}</p>
                 </div>
-            </div>
+            @endif
+
+            {{-- Nuevo campo: Razón Devolución (editable o readonly según necesidad) --}}
+            @if($solicitud->motivo_rechazo)
+                <div class="form-group">
+                    <label for="razon_devolucion">Razón Devolución</label>
+                    <textarea id="razon_devolucion"
+                              name="razon_devolucion"
+                              class="form-control"
+                              readonly
+                              rows="3">{{ $solicitud->motivo_rechazo }}</textarea>
+                </div>
+            @endif
+
+            <form action="{{ route('admin.service.update') }}" 
+                  method="POST" 
+                  enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="id" value="{{ $solicitud->id }}">
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label>Tipo de Persona *</label>
+                        <select name="tipo_persona" class="form-control select2" required>
+                            <option value="natural"
+                                {{ $solicitud->tipo_persona == 'natural' ? 'selected' : '' }}>
+                                Persona Natural
+                            </option>
+                            <option value="juridica"
+                                {{ $solicitud->tipo_persona == 'juridica' ? 'selected' : '' }}>
+                                Persona Jurídica
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Fecha *</label>
+                        <input type="date" 
+                               name="fecha_registro" 
+                               class="form-control"
+                               value="{{ \Carbon\Carbon::parse($solicitud->fecha_registro)->format('Y-m-d') }}" 
+                               required
+                               readonly>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Raz&oacute;n Social *</label>
+                        <input type="text" 
+                               name="razon_social" 
+                               class="form-control" 
+                               required
+                               value="{{ $solicitud->razon_social }}"
+                               style="text-transform:uppercase"
+                               oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Tipo de ID *</label>
+                        <select name="tipo_id" class="form-control select2" required>
+                            <option value="cc"           {{ $solicitud->tipo_id == 'cc'           ? 'selected' : '' }}>C.C.</option>
+                            <option value="ce"           {{ $solicitud->tipo_id == 'ce'           ? 'selected' : '' }}>C.E.</option>
+                            <option value="pa"           {{ $solicitud->tipo_id == 'pa'           ? 'selected' : '' }}>P.A.</option>
+                            <option value="ppt"          {{ $solicitud->tipo_id == 'ppt'          ? 'selected' : '' }}>PPT</option>
+                            <option value="pep"          {{ $solicitud->tipo_id == 'pep'          ? 'selected' : '' }}>PEP</option>
+                            <option value="ti"           {{ $solicitud->tipo_id == 'ti'           ? 'selected' : '' }}>TI</option>
+                            <option value="rc"           {{ $solicitud->tipo_id == 'rc'           ? 'selected' : '' }}>RC</option>
+                            <option value="nit"          {{ $solicitud->tipo_id == 'nit'          ? 'selected' : '' }}>NIT</option>
+                            <option value="internacional"{{ $solicitud->tipo_id == 'internacional'? 'selected' : '' }}>INTERNACIONAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>N&uacute;mero ID *</label>
+                        <input type="text" 
+                               name="identificador" 
+                               class="form-control" 
+                               required
+                               value="{{ $solicitud->identificador }}"
+                               maxlength="50"
+                               style="text-transform:uppercase"
+                               oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Motivo *</label>
+                    <textarea name="motivo" 
+                              class="form-control" 
+                              required
+                              style="text-transform:uppercase"
+                              oninput="this.value = this.value.toUpperCase()">{{ $solicitud->motivo }}</textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6" id="persona_natural">
+                        <label>Nombre Completo *</label>
+                        <input type="text" 
+                               name="nombre_completo" 
+                               class="form-control"
+                               value="{{ $solicitud->nombre_completo }}"
+                               style="text-transform:uppercase"
+                               oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div class="form-group col-md-6 hidden" id="persona_juridica">
+                        <label>Subir Archivos PDF *</label>
+                        <input type="file" 
+                               name="archivos[]" 
+                               id="archivos"
+                               class="form-control" 
+                               multiple 
+                               accept="application/pdf">
+
+                        <div id="filePreview" class="mt-2">
+                            @php
+                                $archivos = json_decode($solicitud->archivo, true);
+                            @endphp
+                            @if(is_array($archivos))
+                                @foreach($archivos as $file)
+                                    <div class="file-item">
+                                        <a href="{{ asset('storage/' . $file) }}"
+                                           target="_blank">{{ basename($file) }}</a>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Cliente *</label>
+                    <select name="tipo_cliente" class="form-control select2" required>
+                        <option value="contratista" {{ $solicitud->tipo_cliente=='contratista' ? 'selected' : '' }}>Contratista</option>
+                        <option value="visitante"    {{ $solicitud->tipo_cliente=='visitante'    ? 'selected' : '' }}>Visitante</option>
+                        <option value="cliente"      {{ $solicitud->tipo_cliente=='cliente'      ? 'selected' : '' }}>Cliente</option>
+                        <option value="proveedor"    {{ $solicitud->tipo_cliente=='proveedor'    ? 'selected' : '' }}>Proveedor</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Guardar cambio</button>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
         </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let tipoPersona = document.getElementById("tipo_persona");
-        let natural = document.getElementById("persona_natural");
-        let juridica = document.getElementById("persona_juridica");
-        let tipoId = document.getElementById("tipo_id");
-        let tipoCliente = document.getElementById("tipo_cliente");
+document.addEventListener("DOMContentLoaded", () => {
+    const tipoPersona = document.querySelector('[name="tipo_persona"]');
+    const nat         = document.getElementById("persona_natural");
+    const jur         = document.getElementById("persona_juridica");
+    const archivos    = document.getElementById("archivos");
+    const preview     = document.getElementById("filePreview");
 
-        const opcionesNatural = `
-            <option value="cc">C.C.</option>
-            <option value="ce">C.E.</option>
-            <option value="pa">P.A.</option>
-            <option value="ppt">PPT</option>
-            <option value="pep">PEP</option>
-            <option value="ti">TI</option>
-            <option value="rc">RC</option>
-        `;
-
-        const opcionesJuridica = `
-            <option value="nit">NIT</option>
-            <option value="internacional">INTERNACIONAL</option>
-        `;
-
-        const opcionesNaturalTipo = `
-            <option value="contratista">Contratista</option>
-            <option value="visitante">Visitante</option>
-        `;
-
-        const opcionesJuridicaTipo = `
-            <option value="cliente">Cliente</option>
-            <option value="proveedor">Proveedor</option>
-        `;
-
-        function actualizarVisibilidad() {
-            if (tipoPersona.value === "natural") {
-                natural.classList.remove("hidden");
-                juridica.classList.add("hidden");
-                tipoId.innerHTML = opcionesNatural;
-                tipoCliente.innerHTML = opcionesNaturalTipo;
-            } else {
-                juridica.classList.remove("hidden");
-                natural.classList.add("hidden");
-                tipoId.innerHTML = opcionesJuridica;
-                tipoCliente.innerHTML = opcionesJuridicaTipo;
-            }
+    function togglePersona() {
+        if (tipoPersona.value === "juridica") {
+            jur.classList.remove("hidden");
+            nat.classList.add("hidden");
+        } else {
+            nat.classList.remove("hidden");
+            jur.classList.add("hidden");
         }
+    }
 
-        // Llamar a la funciÃ³n para establecer los valores correctos al cargar la pÃ¡gina
-        actualizarVisibilidad();
+    tipoPersona.addEventListener("change", togglePersona);
+    togglePersona();
 
-        // Evento para cambiar la visibilidad y opciones cuando el usuario selecciona un tipo de persona
-        tipoPersona.addEventListener("change", actualizarVisibilidad);
+    archivos?.addEventListener("change", function() {
+        preview.innerHTML = "";
+        Array.from(this.files).forEach(f => {
+            const div = document.createElement("div");
+            div.textContent = `${f.name} (${(f.size/1024).toFixed(1)} KB)`;
+            preview.appendChild(div);
+        });
     });
+
+    $('.select2').select2();
+});
 </script>
 @endsection
-

@@ -208,7 +208,8 @@ class UserServiceController extends Controller
             'identificador'   => 'required|string|max:50',
             'motivo'          => 'required|string',
             'nombre_completo' => 'nullable|string|max:255',
-            'archivos.*'      => 'nullable|file|mimes:pdf|max:2048',
+            'archivos'        => 'nullable|array|min:1|max:10',
+            'archivos.*'      => 'file|mimes:pdf|max:2048',
             'tipo_cliente'    => 'nullable|string|in:proveedor,cliente,visitante,contratista',
         ]);
 
@@ -280,7 +281,7 @@ class UserServiceController extends Controller
         $solicitud      = Solicitud::findOrFail($id);
         $logoPath       = storage_path('app/public/logo.png');
         $rqDynamicPath  = storage_path('app/public/rq.png');
-        $qrStaticPath   = public_path('qr.png');
+        $qrStaticPath   = public_path('storage/qr.png');
 
         $data = [
             'solicitud'     => $solicitud,
@@ -314,7 +315,7 @@ class UserServiceController extends Controller
         $solicitud      = Solicitud::findOrFail($id);
         $logoPath       = storage_path('app/public/logo.png');
         $rqDynamicPath  = storage_path('app/public/rq.png');
-        $qrStaticPath   = public_path('qr.png');
+        $qrStaticPath   = public_path('storage/qr.png');
 
         return view('backend.pages.requests.documento_final', [
             'solicitud'      => $solicitud,
