@@ -1,55 +1,35 @@
-/*--------------------------------------------
+/*==============================================================================
+=  public/backend/assets/css/styles.css                                       =
+=  Versión “brandizada” con variables CSS y paleta Monómeros                  =
+==============================================================================*/
 
-    Template Name: srtdash - Bootstrap 4 Admin and Ui Kit
-    Template URI: http://tf.itech-theme.com/srtdash-preview
-    Description: This is Bootstrap 4 Admin Template and Ui Kit
-    Author: cdibrandstudio
-    Author https://themeforest.net/user/cdibrandstudio
-    Version: 1.0
+/* 1) Importar la fuente Jost y (manualmente) adosar Futura Std via @font-face */
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;700&display=swap');
 
-----------------------------------------------
-    
-    CSS INDEX
-    ===================
-  
-    1. Core Css
-    2. Dashboard One
-        2.1 Sidebar Menu
-            2.1.1 Horizontal Menu
-        2.2 Header Area
-        2.3 Page Title Area
-        2.4 Fact Area
-        2.5 Overview
-        2.6 Market value
-        2.7 Live Crypto Price
-        2.8 Trading History
-        2.9 Letest Post
-    3. Dashboard Two
-    4. Dashboard Three
-    5. Bar Chart
-    6. Line Chart
-    7. Pie Chart
-    8. Accroding
-    9. Alert
-   10. Badge
-   11. Button
-   12. Cards
-   13. Dropdown Button
-   14. List Group
-   15. Modal
-   16. Pagination
-   17. Form
-   18. Icons
-   19. Table Basic
-   20. Datatable
-   21. Map
-   22. Invoice
-   23. Login
-   24. Pricing
-   25. 404 Page
-   26. Offset Sidebar
+/* 2) Variables de Marca */
+:root {
+  --color-primary:   #007938; /* Verde Monómeros */
+  --color-secondary: #21362C; /* Verde oscuro */
+  --color-accent:    #80BC00; /* Verde claro */
+  --color-bg-light:  #EDE9CC; /* Crema */
+  --color-dark:      #49392C; /* Marrón oscuro */
+  --color-orange:    #F18B04; /* Naranja */
+  --color-white:     #FFFFFF; /* Blanco */
+  --text-default:    #21362C; /* Texto general */
+}
 
------------------------------------------------------------------------------------*/
+/* 3) Tipografía global */
+body {
+  font-family: 'Jost', sans-serif;
+  color: var(--text-default);
+  background: var(--color-bg-light);
+}
+
+/* 4) Títulos con Futura Std */
+h1, h2, h3, .title {
+  font-family: 'Futura Std', sans-serif;
+  color: var(--text-default);
+}
 
 
 /*------------------------- 1. Core Css -------------------*/

@@ -33,7 +33,10 @@
             font-size: 14px; 
             line-height: 1.6;
             margin-bottom: 30px;
+            /* Justificado */
             text-align: justify;
+            text-justify: inter-word;
+            -webkit-text-align: justify;
         }
         .concepts-container {
             display: flex;
@@ -87,9 +90,7 @@
     <div class="title">DEBIDA DILIGENCIA DE CONTRAPARTE N. {{ $solicitud->id }} -- {{ date('Y') }}</div>
 
     <div class="content">
-        Monómeros y sus empresas filiales y luego de realizar la Debida
-        Diligencia de {{ $solicitud->nombre_completo ?? $solicitud->razon_social }}, identificada con NÚMERO {{ $solicitud->tipo_id }} {{ $solicitud->identificador }},
-        se emite el siguiente concepto: <strong>{{ $solicitud->concepto }}</strong>
+        Monómeros y sus empresas filiales y luego de realizar la Debida Diligencia de {{ $solicitud->nombre_completo ?? $solicitud->razon_social }}, identificada con NÚMERO {{ $solicitud->tipo_id }} {{ $solicitud->identificador }}, se emite el siguiente concepto: <strong>{{ $solicitud->concepto }}</strong>
     </div>
 
     <div class="concepts-container">

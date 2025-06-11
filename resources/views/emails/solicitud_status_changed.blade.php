@@ -16,7 +16,8 @@
     <p>
         Razón Social: {{ $solicitud->razon_social }}<br>
         Fecha Registro: {{ \Carbon\Carbon::parse($solicitud->fecha_registro)->format('d/m/Y') }}<br>
-        Motivo: {{ $solicitud->motivo }}
+        Motivo: {{ $solicitud->motivo }}<br>
+        Razón Devolución: {{ $solicitud->motivo_rechazo }}
     </p>
 
     <p>Si tienes alguna duda, ingresa al sistema para más detalles.</p>

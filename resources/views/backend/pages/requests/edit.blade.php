@@ -15,18 +15,18 @@
         <div class="card-body">
             @include('backend.layouts.partials.messages')
 
-            {{-- Mostrar motivo de devolución si existe --}}
+            {{-- Mostrar motivo de devoluciï¿½n si existe --}}
             @if($solicitud->motivo_rechazo)
                 <div class="alert alert-warning">
-                    <strong>Motivo de devolución:</strong>
+                    <strong>Motivo de devoluciÃ³n:</strong>
                     <p>{{ $solicitud->motivo_rechazo }}</p>
                 </div>
             @endif
 
-            {{-- Nuevo campo: Razón Devolución (editable o readonly según necesidad) --}}
+            {{-- Nuevo campo: Razï¿½n Devoluciï¿½n (editable o readonly segï¿½n necesidad) --}}
             @if($solicitud->motivo_rechazo)
                 <div class="form-group">
-                    <label for="razon_devolucion">Razón Devolución</label>
+                    <label for="razon_devolucion">RazÃ³n DevoluciÃ³n</label>
                     <textarea id="razon_devolucion"
                               name="razon_devolucion"
                               class="form-control"
@@ -51,7 +51,7 @@
                             </option>
                             <option value="juridica"
                                 {{ $solicitud->tipo_persona == 'juridica' ? 'selected' : '' }}>
-                                Persona Jurídica
+                                Persona JurÃ­dica
                             </option>
                         </select>
                     </div>

@@ -21,7 +21,7 @@ class ApproverController extends Controller
 {
     public function __construct()
     {
-        // Si utilizas un método de autorización personalizado, actívalo aquí
+        // Si utilizas un mï¿½todo de autorizaciï¿½n personalizado, actï¿½valo aquï¿½
         // $this->middleware('can:admin.view');
     }
 
@@ -54,7 +54,7 @@ class ApproverController extends Controller
     }
 
     /**
-     * Mostrar detalle de solicitud para revisión (SAGRILAFT o PTEE)
+     * Mostrar detalle de solicitud para revisiï¿½n (SAGRILAFT o PTEE)
      */
     public function show(Request $request, $id): Renderable
     {
@@ -71,12 +71,12 @@ class ApproverController extends Controller
     }
 
     /**
-     * Guardar decisión de SAGRILAFT o PTEE:
+     * Guardar decisiï¿½n de SAGRILAFT o PTEE:
      * - Inserta/Actualiza miembros
      * - Actualiza estado y concepto en solicitudes
      * - Registra movimiento en movimientos_solicitudes
      * - Notifica por correo (comentado temporalmente)
-     * - Si ENTREGADO, inserta/actualiza en tabla “informacion”
+     * - Si ENTREGADO, inserta/actualiza en tabla ï¿½informacionï¿½
      */
     public function save(Request $request, $id): RedirectResponse
     {
@@ -134,7 +134,7 @@ class ApproverController extends Controller
             $estado = 'ENTREGADO';
         }
 
-        // Si alguno dictó NO FAVORABLE, concepto global = NO FAVORABLE
+        // Si alguno dictï¿½ NO FAVORABLE, concepto global = NO FAVORABLE
         if ($concepto_sagrilaft === 'NO FAVORABLE' || $concepto_ptee === 'NO FAVORABLE') {
             $concepto = 'NO FAVORABLE';
         }
@@ -159,12 +159,15 @@ class ApproverController extends Controller
             'fecha_movimiento'=> now(),
         ]);
 
-        // 6) Notificar por correo al creador si cambió el estado (comentado temporalmente)
-        $solicitud = Solicitud::with('admin')->findOrFail($id);
-        // Mail::to($solicitud->admin->email)
-        //     ->send(new SolicitudStatusChanged($solicitud));
+        // 6) Notificar por correo al creador si cambiÃ³ el estado a ENTREGADO
+            $solicitud = Solicitud::with('admin')->findOrFail($id);
+            if ($estado === 'ENTREGADO') {
+            Mail::to($solicitud->admin->email)
+            ->send(new SolicitudStatusChanged($solicitud));
+            }
 
-        // 7) Si ENTREGADO, insertar/actualizar en tabla “informacion”
+
+        // 7) Si ENTREGADO, insertar/actualizar en tabla ï¿½informacionï¿½
         if ($estado === 'ENTREGADO') {
             DB::table('informacion')->updateOrInsert(
                 ['identificador' => $solicitud->identificador],
@@ -184,7 +187,7 @@ class ApproverController extends Controller
             );
         }
 
-        // 8) Redireccionar según la vista
+        // 8) Redireccionar segï¿½n la vista
         if ($vista === 2) {
             return redirect()
                 ->route('admin.approver2.index')

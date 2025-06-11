@@ -117,7 +117,7 @@ class AnalistsController extends Controller
         if ($accion === 'procesar') {
             Solicitud::where('id', $id)->update(['estado' => 'APROBADOR_SAGRILAFT']);
             $sol = Solicitud::findOrFail($id);
-            Mail::to($sol->admin->email)->send(new SolicitudStatusChanged($sol)); // correo desactivado
+            //Mail::to($sol->admin->email)->send(new SolicitudStatusChanged($sol)); // correo desactivado
             return redirect()->route('admin.analists.index')->with('success', 'Solicitud enviada a SAGRILAFT correctamente.');
         }
 
