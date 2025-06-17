@@ -121,14 +121,30 @@ class AnalistsController extends Controller
             return redirect()->route('admin.analists.index')->with('success', 'Solicitud enviada a SAGRILAFT correctamente.');
         }
 
-        if ($accion === 'documentacion') {
-            Solicitud::where('id', $id)->update(['estado'=>'DOCUMENTACION']);
-            $sol = Solicitud::findOrFail($id);
-            Mail::to($sol->admin->email)->send(new SolicitudStatusChanged($sol)); // correo desactivado
-            return redirect()->route('admin.analists.index')->with('success', 'Solicitud regresada a Documentación correctamente.');
-        }
+                    if ($accion === 'documentacion') {
+                    // 1) Actualiza estado y motivo de devolución
+                    Solicitud::where('id', $id)->update([
+                        'estado'         => 'DOCUMENTACION',
+                        'motivo_rechazo' => $request->input('motivo_rechazo'),
+                    ]);
 
-        // Acción: guardar como borrador
-        return redirect()->route('admin.analists.show', $id)->with('success', 'Borrador guardado correctamente.');
-    }
+                    // 2) Recupera la solicitud ya con motivo_rechazo
+                    $sol = Solicitud::findOrFail($id);
+
+                    // 3) Envía el correo de notificación
+                    Mail::to($sol->admin->email)
+                        ->send(new SolicitudStatusChanged($sol));
+
+                    // 4) Redirige y sale del método
+                    return redirect()
+                        ->route('admin.analists.index')
+                        ->with('success', 'Solicitud regresada a Documentación correctamente.');
+                }   // <-- Esta llave cierra sólo el `if`
+
+                // Si no es "documentacion", sigue con el flujo de "borrador"
+                return redirect()
+                    ->route('admin.analists.show', $id)
+                    ->with('success', 'Borrador guardado correctamente.');
+    }   // <-- Y ésta cierra todo el método save()
+
 }
