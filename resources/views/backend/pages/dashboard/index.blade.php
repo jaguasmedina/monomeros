@@ -19,7 +19,7 @@ Dashboard - Panel administrador
             <div class="breadcrumbs-area clearfix">
                 <h4 class="page-title pull-left">Aréa de Trabajo</h4>
                 <ul class="breadcrumbs pull-left">
-                    <li><a href="index.html">Inicio</a></li>
+                    
                     <li><span>INFORMACIÓN PCP</span></li>
                 </ul>
             </div>

@@ -22,6 +22,6 @@
 
     <p>Si tienes alguna duda, ingresa al sistema para más detalles.</p>
 
-    <p>Saludos,<br>Equipo de Monómeros</p>
+    <p>Saludos,<br>Superintendencia PCP</p>
 </body>
 </html>

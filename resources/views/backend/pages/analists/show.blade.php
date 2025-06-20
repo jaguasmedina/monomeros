@@ -165,7 +165,8 @@
                     <textarea name="motivo_rechazo"
                               id="motivo_rechazo"
                               class="form-control"
-                              rows="3">{{ old('motivo_rechazo', $solicitud->motivo_rechazo ?? '') }}</textarea>
+                              rows="3"
+                              required>{{ old('motivo_rechazo', $solicitud->motivo_rechazo ?? '') }}</textarea>
                 </div>
 
                 {{-- Campo oculto que define la acción --}}
@@ -180,7 +181,13 @@
                         </button>
 
                         <button type="submit" class="btn btn-warning"
-                                onclick="showMotivo(); document.getElementById('accion').value='documentacion'">
+                                onclick="
+                                    if (document.getElementById('motivoRechazoContainer').classList.contains('hidden')) {
+                                        showMotivo();
+                                        return false;
+                                    }
+                                    document.getElementById('accion').value='documentacion';
+                                ">
                             Regresar por Documentación
                         </button>
 
@@ -206,9 +213,10 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // Motivo devolución
+    // Control motivo devolución
     const motivoContainer = document.getElementById('motivoRechazoContainer');
     const motivoTextarea  = document.getElementById('motivo_rechazo');
+
     window.showMotivo = function() {
         motivoContainer.classList.remove('hidden');
         motivoTextarea.required = true;
@@ -217,13 +225,15 @@ document.addEventListener("DOMContentLoaded", () => {
         motivoContainer.classList.add('hidden');
         motivoTextarea.required = false;
     };
+
+    // Al cargar, ocultamos el textarea
     hideMotivo();
 
-    // Miembros dinámicos
+    // --- Miembros dinámicos ---
     const maxMembers = 100;
     let memberCount = document.querySelectorAll("#membersContainer .member").length;
-    const container = document.getElementById("membersContainer");
-    const addBtn = document.getElementById("addMemberBtn");
+    const container   = document.getElementById("membersContainer");
+    const addBtn      = document.getElementById("addMemberBtn");
 
     function updateButtons() {
         addBtn.disabled = container.querySelectorAll(".member").length >= maxMembers;
@@ -232,9 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function bindFavorable() {
         document.querySelectorAll(".favorable-select").forEach(sel => {
             sel.addEventListener("change", () => {
-                const anyNo = Array.from(document.querySelectorAll(".favorable-select"))
-                    .some(s => s.value === "no");
-                // aquí podrías mostrar algo si hay “no”
+                // aquí podrías reaccionar a cambios “no”
             });
         });
     }
