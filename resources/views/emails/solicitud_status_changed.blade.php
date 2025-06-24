@@ -10,8 +10,9 @@
     <p>El estado de tu solicitud <strong>#{{ $solicitud->id }}</strong> ha sido actualizado a:</p>
 
     <p style="font-size:1.2em; font-weight:bold; color:#006837;">
-        {{ ucfirst(strtolower($solicitud->estado)) }}
+    {{ mb_strtoupper($solicitud->estado, 'UTF-8') }}
     </p>
+
 
     <p>
         Razón Social: {{ $solicitud->razon_social }}<br>
