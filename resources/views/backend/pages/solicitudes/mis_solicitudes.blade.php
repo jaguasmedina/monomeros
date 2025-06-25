@@ -13,7 +13,7 @@
     /* filas impares en gris claro */
     .table-striped tbody tr.odd,
     .data-tables table.dataTable.stripe tbody tr.odd {
-        background-color: #f9f9f9 !important;
+        background-color: #f7fcf7 !important;
     }
     /* filas pares en blanco */
     .table-striped tbody tr.even,

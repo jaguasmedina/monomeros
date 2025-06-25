@@ -148,3 +148,4 @@ class AnalistsController extends Controller
     }   // <-- Y ésta cierra todo el método save()
 
 }
+

@@ -152,7 +152,7 @@
                                 <div id="filePreview" class="file-preview"></div>
                             </div>
                             <div class="form-group col-md-6 col-sm-12">
-                                <label>Tipo de Cliente *</label>
+                                <label>Tipo*</label>
                                 <select name="tipo_cliente" id="tipo_cliente" class="form-control select2" required>
                                     <option value="CONTRATISTA" {{ old('tipo_cliente')==='CONTRATISTA'? 'selected':'' }}>CONTRATISTA</option>
                                     <option value="VISITANTE"   {{ old('tipo_cliente')==='VISITANTE'?   'selected':'' }}>VISITANTE</option>

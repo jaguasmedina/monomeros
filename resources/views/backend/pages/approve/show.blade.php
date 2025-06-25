@@ -42,12 +42,18 @@
                             </div>
                         </div>
 
-                        <!-- 2) Razón Social e Identificación -->
+                        <!-- 2) Razón Social o Nombre Completo e Identificación -->
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label>Razón Social</label>
-                                <input type="text" readonly class="form-control"
-                                       value="{{ $solicitud->razon_social }}">
+                                @if($solicitud->nombre_completo)
+                                    <label>Nombre Completo</label>
+                                    <input type="text" readonly class="form-control"
+                                           value="{{ $solicitud->nombre_completo }}">
+                                @else
+                                    <label>Razón Social</label>
+                                    <input type="text" readonly class="form-control"
+                                           value="{{ $solicitud->razon_social }}">
+                                @endif
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Identificación</label>
@@ -65,12 +71,9 @@
                             </div>
                             <div class="form-group col-md-4">
                                 <label>Descargar Documento Original</label><br>
-
                                 @php
-                                    // Si el campo archivo viene como JSON de rutas
                                     $paths = json_decode($solicitud->archivo ?? '[]', true) ?: [];
                                 @endphp
-
                                 @if(count($paths))
                                     @foreach($paths as $path)
                                         <a href="{{ asset('storage/' . trim($path, '"')) }}"
@@ -82,7 +85,6 @@
                                 @else
                                     <p>No hay documento adjunto</p>
                                 @endif
-
                             </div>
                         </div>
 
@@ -90,7 +92,7 @@
                         <div id="membersContainer">
                             @foreach ($solicitud->miembros as $i => $miembro)
                                 <div class="form-row member" data-miembro-id="{{ $miembro->id }}">
-                                    <div class="form-group col-md-3">
+                                     <div class="form-group col-md-3">
                                         <label>TÍTULO</label>
                                         <input type="text" name="miembros[{{ $i }}][titulo]"
                                                class="form-control" value="{{ $miembro->titulo }}" required>
@@ -158,9 +160,7 @@
                         @endif
 
                         <input type="hidden" name="vista" value="{{ $vista }}">
-                        
-                        </form>
-                        
+                    </form>
                 </div>
             </div>
         </div>

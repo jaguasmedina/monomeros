@@ -44,10 +44,17 @@
                 {{-- Datos de cliente --}}
                 <div class="form-row mb-3">
                     <div class="form-group col-md-6">
-                        <label>Razón Social</label>
-                        <input type="text" readonly
-                               value="{{ $solicitud->razon_social }}"
-                               class="form-control">
+                        @if($solicitud->nombre_completo)
+                            <label>Nombre Completo</label>
+                            <input type="text" readonly
+                                   value="{{ $solicitud->nombre_completo }}"
+                                   class="form-control">
+                        @else
+                            <label>Razón Social</label>
+                            <input type="text" readonly
+                                   value="{{ $solicitud->razon_social }}"
+                                   class="form-control">
+                        @endif
                     </div>
                     <div class="form-group col-md-6">
                         <label>Identificación</label>
@@ -172,7 +179,7 @@
                 {{-- Campo oculto que define la acción --}}
                 <input type="hidden" name="accion" id="accion" value="procesar">
 
-                {{-- Botones de acción unificados --}}
+                {{-- Botones de acción --}}
                 <div class="form-row mt-3">
                     <div class="col">
                         <button type="submit" class="btn btn-primary"
@@ -202,7 +209,6 @@
                         </a>
                     </div>
                 </div>
-
             </form>
         </div>
     </div>
@@ -216,17 +222,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Control motivo devolución
     const motivoContainer = document.getElementById('motivoRechazoContainer');
     const motivoTextarea  = document.getElementById('motivo_rechazo');
-
-    window.showMotivo = function() {
-        motivoContainer.classList.remove('hidden');
-        motivoTextarea.required = true;
-    };
-    window.hideMotivo = function() {
-        motivoContainer.classList.add('hidden');
-        motivoTextarea.required = false;
-    };
-
-    // Al cargar, ocultamos el textarea
+    window.showMotivo = () => { motivoContainer.classList.remove('hidden'); motivoTextarea.required = true; };
+    window.hideMotivo = () => { motivoContainer.classList.add('hidden'); motivoTextarea.required = false; };
     hideMotivo();
 
     // --- Miembros dinámicos ---
