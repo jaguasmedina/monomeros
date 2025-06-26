@@ -67,13 +67,9 @@
 <body>
     @php
         use App\Models\Admin;
-        // nombre de los oficiales
+        // nombres de los oficiales
         $offS = Admin::where('username','sagrilaft')->value('name');
         $offP = Admin::where('username','ptee')->value('name');
-        // flag si SAGRILAFT dictó No Favorable
-        $noFavS = strtoupper($solicitud->concepto_sagrilaft ?? '') === 'NO FAVORABLE';
-        // mostrar nombre completo o razón social (cae a razon_social si nombre_completo es null o cadena vacía)
-        $displayName = $solicitud->nombre_completo ?: $solicitud->razon_social;
     @endphp
 
     <div class="header">
@@ -91,7 +87,7 @@
 
     <div class="content">
         Monómeros S.A. y sus empresas filiales, luego de realizar la Debida Diligencia de 
-        <strong>{{ strtoupper($displayName) }}</strong>, 
+        <strong>{{ $solicitud->nombre_completo ?? $solicitud->razon_social }}</strong>, 
         identificada con <strong>{{ strtoupper($solicitud->tipo_id) }} {{ $solicitud->identificador }}</strong>,
         emiten el siguiente concepto:
         <strong>{{ strtoupper($solicitud->concepto ?? '—') }}</strong>.
@@ -103,13 +99,11 @@
         <small>Oficial de Cumplimiento SAGRILAFT: {{ $offS }}</small>
     </div>
 
-    @unless($noFavS)
-        <div class="concept-section">
-            <h3>Concepto de la revisión realizada para antecedentes de corrupción y soborno transnacional:</h3>
-            <p>{{ strtoupper($solicitud->concepto_ptee ?? '—') }}</p>
-            <small>Oficial de Cumplimiento C/ST: {{ $offP }}</small>
-        </div>
-    @endunless
+    <div class="concept-section">
+        <h3>Concepto de la revisión realizada para antecedentes de corrupción y soborno transnacional:</h3>
+        <p>{{ strtoupper($solicitud->concepto_ptee ?? '—') }}</p>
+        <small>Oficial de Cumplimiento C/ST: {{ $offP }}</small>
+    </div>
 
     <div class="footer">
         <br>Fecha Debida Diligencia: {{ \Carbon\Carbon::parse($solicitud->fecha_registro)->format('d/m/Y') }}<br>

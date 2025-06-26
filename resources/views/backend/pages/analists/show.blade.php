@@ -19,7 +19,6 @@
         <div class="card-body">
             @include('backend.layouts.partials.messages')
 
-            {{-- FORMULARIO PRINCIPAL --}}
             <form id="solicitudForm"
                   action="{{ route('admin.analists.save', $solicitud->id) }}"
                   method="POST">
@@ -44,17 +43,10 @@
                 {{-- Datos de cliente --}}
                 <div class="form-row mb-3">
                     <div class="form-group col-md-6">
-                        @if($solicitud->nombre_completo)
-                            <label>Nombre Completo</label>
-                            <input type="text" readonly
-                                   value="{{ $solicitud->nombre_completo }}"
-                                   class="form-control">
-                        @else
-                            <label>Razón Social</label>
-                            <input type="text" readonly
-                                   value="{{ $solicitud->razon_social }}"
-                                   class="form-control">
-                        @endif
+                        <label>Razón Social</label>
+                        <input type="text" readonly
+                               value="{{ $solicitud->razon_social }}"
+                               class="form-control">
                     </div>
                     <div class="form-group col-md-6">
                         <label>Identificación</label>
@@ -64,17 +56,13 @@
                     </div>
                 </div>
 
-                {{-- Motivo --}}
+                {{-- Motivo y adjuntos --}}
                 <div class="form-row mb-3">
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-8">
                         <label>Motivo</label>
                         <textarea readonly class="form-control">{{ $solicitud->motivo }}</textarea>
                     </div>
-                </div>
-
-                {{-- Descargar documento(s) --}}
-                <div class="form-row mb-3">
-                    <div class="form-group col-md-12">
+                    <div class="form-group col-md-4">
                         <label>Descargar Documento</label><br>
                         @php
                             $paths = [];
@@ -97,7 +85,7 @@
                     </div>
                 </div>
 
-                {{-- Botón Agregar Miembro --}}
+                {{-- botón Agregar Miembro --}}
                 <div class="form-row mb-3">
                     <div class="col-12">
                         <button type="button" id="addMemberBtn"
@@ -172,14 +160,13 @@
                     <textarea name="motivo_rechazo"
                               id="motivo_rechazo"
                               class="form-control"
-                              rows="3"
-                              required>{{ old('motivo_rechazo', $solicitud->motivo_rechazo ?? '') }}</textarea>
+                              rows="3">{{ old('motivo_rechazo', $solicitud->motivo_rechazo ?? '') }}</textarea>
                 </div>
 
                 {{-- Campo oculto que define la acción --}}
                 <input type="hidden" name="accion" id="accion" value="procesar">
 
-                {{-- Botones de acción --}}
+                {{-- Botones de acción unificados --}}
                 <div class="form-row mt-3">
                     <div class="col">
                         <button type="submit" class="btn btn-primary"
@@ -187,14 +174,8 @@
                             PROCESAR
                         </button>
 
-                        <button type="submit" class="btn btn-warning"
-                                onclick="
-                                    if (document.getElementById('motivoRechazoContainer').classList.contains('hidden')) {
-                                        showMotivo();
-                                        return false;
-                                    }
-                                    document.getElementById('accion').value='documentacion';
-                                ">
+                        <button type="button" id="btnDocumentacion"
+                                class="btn btn-warning">
                             Regresar por Documentación
                         </button>
 
@@ -209,6 +190,7 @@
                         </a>
                     </div>
                 </div>
+
             </form>
         </div>
     </div>
@@ -219,12 +201,36 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    // Control motivo devolución
+    // Motivo devolución
     const motivoContainer = document.getElementById('motivoRechazoContainer');
     const motivoTextarea  = document.getElementById('motivo_rechazo');
-    window.showMotivo = () => { motivoContainer.classList.remove('hidden'); motivoTextarea.required = true; };
-    window.hideMotivo = () => { motivoContainer.classList.add('hidden'); motivoTextarea.required = false; };
+    window.showMotivo = function() {
+        motivoContainer.classList.remove('hidden');
+        motivoTextarea.required = true;
+    };
+    window.hideMotivo = function() {
+        motivoContainer.classList.add('hidden');
+        motivoTextarea.required = false;
+    };
     hideMotivo();
+
+    // Nuevo flujo para “Regresar por Documentación”
+    const btnDoc = document.getElementById('btnDocumentacion');
+    btnDoc.addEventListener('click', () => {
+        // Si aún no mostramos la razón, solo la mostramos y detenemos el envío
+        if (motivoContainer.classList.contains('hidden')) {
+            showMotivo();
+            motivoTextarea.focus();
+        } else {
+            // Ya visible: validamos que tenga texto antes de enviar
+            if (motivoTextarea.value.trim() === '') {
+                motivoTextarea.focus();
+            } else {
+                document.getElementById('accion').value = 'documentacion';
+                document.getElementById('solicitudForm').submit();
+            }
+        }
+    });
 
     // --- Miembros dinámicos ---
     const maxMembers = 100;
