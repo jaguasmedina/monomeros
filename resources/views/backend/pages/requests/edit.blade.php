@@ -194,7 +194,7 @@
 
                 {{-- Tipo de Cliente --}}
                 <div class="form-group">
-                    <label>Tipo de Cliente *</label>
+                    <label>Tipo*</label>
                     <select name="tipo_cliente" class="form-control select2" required>
                         <option value="contratista"
                             {{ $solicitud->tipo_cliente == 'contratista' ? 'selected' : '' }}>
