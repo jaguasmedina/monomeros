@@ -40,6 +40,8 @@
                     </div>
                 </div>
 
+                           
+
                 {{-- Datos de cliente --}}
                 <div class="form-row mb-3">
                     <div class="form-group col-md-6">
@@ -55,6 +57,18 @@
                                class="form-control">
                     </div>
                 </div>
+
+                 @if($solicitud->tipo_persona === 'natural')
+                <div class="form-row mb-3">
+                    <div class="form-group col-md-6">
+                        <label>Nombre Completo</label>
+                        <input type="text" readonly
+                            name="nombre_completo"
+                            value="{{ $solicitud->nombre_completo }}"
+                            class="form-control">
+                    </div>
+                </div>
+                @endif
 
                 {{-- Motivo y adjuntos --}}
                 <div class="form-row mb-3">
