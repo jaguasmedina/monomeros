@@ -85,55 +85,59 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label>Tipo de ID *</label>
+                        
+
                         <select name="tipo_id" class="form-control select2" required>
-                            @if($solicitud->tipo_persona === 'juridica')
-                                <option value="nit"
-                                    {{ $solicitud->tipo_id == 'nit' ? 'selected' : '' }}>
-                                    NIT
-                                </option>
-                                <option value="internacional"
-                                    {{ $solicitud->tipo_id == 'internacional' ? 'selected' : '' }}>
-                                    INTERNACIONAL
-                                </option>
-                            @else
-                                <option value="cc"
-                                    {{ $solicitud->tipo_id == 'cc' ? 'selected' : '' }}>
-                                    C.C.
-                                </option>
-                                <option value="ce"
-                                    {{ $solicitud->tipo_id == 'ce' ? 'selected' : '' }}>
-                                    C.E.
-                                </option>
-                                <option value="pa"
-                                    {{ $solicitud->tipo_id == 'pa' ? 'selected' : '' }}>
-                                    P.A.
-                                </option>
-                                <option value="ppt"
-                                    {{ $solicitud->tipo_id == 'ppt' ? 'selected' : '' }}>
-                                    PPT
-                                </option>
-                                <option value="pep"
-                                    {{ $solicitud->tipo_id == 'pep' ? 'selected' : '' }}>
-                                    PEP
-                                </option>
-                                <option value="ti"
-                                    {{ $solicitud->tipo_id == 'ti' ? 'selected' : '' }}>
-                                    TI
-                                </option>
-                                <option value="rc"
-                                    {{ $solicitud->tipo_id == 'rc' ? 'selected' : '' }}>
-                                    RC
-                                </option>
-                                <option value="nit"
-                                    {{ $solicitud->tipo_id == 'nit' ? 'selected' : '' }}>
-                                    NIT
-                                </option>
-                                <option value="internacional"
-                                    {{ $solicitud->tipo_id == 'internacional' ? 'selected' : '' }}>
-                                    INTERNACIONAL
-                                </option>
-                            @endif
-                        </select>
+    @if($solicitud->tipo_persona === 'juridica')
+        <option value="nit"
+            {{ strtolower($solicitud->tipo_id) === 'nit' ? 'selected' : '' }}>
+            NIT
+        </option>
+        <option value="internacional"
+            {{ strtolower($solicitud->tipo_id) === 'internacional' ? 'selected' : '' }}>
+            INTERNACIONAL
+        </option>
+    @else
+        <option value="cc"
+            {{ strtolower($solicitud->tipo_id) === 'cc' ? 'selected' : '' }}>
+            C.C.
+        </option>
+        <option value="ce"
+            {{ strtolower($solicitud->tipo_id) === 'ce' ? 'selected' : '' }}>
+            C.E.
+        </option>
+        <option value="pa"
+            {{ strtolower($solicitud->tipo_id) === 'pa' ? 'selected' : '' }}>
+            P.A.
+        </option>
+        <option value="ppt"
+            {{ strtolower($solicitud->tipo_id) === 'ppt' ? 'selected' : '' }}>
+            PPT
+        </option>
+        <option value="pep"
+            {{ strtolower($solicitud->tipo_id) === 'pep' ? 'selected' : '' }}>
+            PEP
+        </option>
+        <option value="ti"
+            {{ strtolower($solicitud->tipo_id) === 'ti' ? 'selected' : '' }}>
+            TI
+        </option>
+        <option value="rc"
+            {{ strtolower($solicitud->tipo_id) === 'rc' ? 'selected' : '' }}>
+            RC
+        </option>
+        <option value="nit"
+            {{ strtolower($solicitud->tipo_id) === 'nit' ? 'selected' : '' }}>
+            NIT
+        </option>
+        <option value="internacional"
+            {{ strtolower($solicitud->tipo_id) === 'internacional' ? 'selected' : '' }}>
+            INTERNACIONAL
+        </option>
+    @endif
+</select>
+
+
                     </div>
                     <div class="form-group col-md-6">
                         <label>Número ID *</label>
@@ -195,24 +199,26 @@
                 {{-- Tipo de Cliente --}}
                 <div class="form-group">
                     <label>Tipo*</label>
-                    <select name="tipo_cliente" class="form-control select2" required>
-                        <option value="contratista"
-                            {{ $solicitud->tipo_cliente == 'contratista' ? 'selected' : '' }}>
-                            Contratista
-                        </option>
-                        <option value="visitante"
-                            {{ $solicitud->tipo_cliente == 'visitante' ? 'selected' : '' }}>
-                            Visitante
-                        </option>
-                        <option value="cliente"
-                            {{ $solicitud->tipo_cliente == 'cliente' ? 'selected' : '' }}>
-                            Cliente
-                        </option>
-                        <option value="proveedor"
-                            {{ $solicitud->tipo_cliente == 'proveedor' ? 'selected' : '' }}>
-                            Proveedor
-                        </option>
-                    </select>
+                    
+                        <select name="tipo_cliente" class="form-control select2" required>
+    <option value="contratista"
+        {{ strtolower($solicitud->tipo_cliente) === 'contratista' ? 'selected' : '' }}>
+        Contratista
+    </option>
+    <option value="visitante"
+        {{ strtolower($solicitud->tipo_cliente) === 'visitante' ? 'selected' : '' }}>
+        Visitante
+    </option>
+    <option value="cliente"
+        {{ strtolower($solicitud->tipo_cliente) === 'cliente' ? 'selected' : '' }}>
+        Cliente
+    </option>
+    <option value="proveedor"
+        {{ strtolower($solicitud->tipo_cliente) === 'proveedor' ? 'selected' : '' }}>
+        Proveedor
+    </option>
+</select> 
+
                 </div>
 
                 {{-- Acciones --}}
